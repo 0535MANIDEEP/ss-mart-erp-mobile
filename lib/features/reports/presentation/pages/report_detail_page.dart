@@ -253,6 +253,12 @@ class ReportDetailPage extends StatelessWidget {
         return 'Purchase vs Sales';
       case ReportType.hsnGstSummary:
         return 'HSN-wise GST Summary';
+      case ReportType.gstr1:
+        return 'GSTR-1';
+      case ReportType.gstr3b:
+        return 'GSTR-3B';
+      case ReportType.paymentSummary:
+        return 'Payment Summary';
     }
   }
 }

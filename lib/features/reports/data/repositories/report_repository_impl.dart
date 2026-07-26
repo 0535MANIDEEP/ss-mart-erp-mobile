@@ -85,6 +85,12 @@ class ReportRepositoryImpl implements ReportRepository {
         return _purchaseVsSalesReport(start, end);
       case ReportType.hsnGstSummary:
         return _hsnGstSummaryReport(start, end);
+      case ReportType.gstr1:
+        return _gstr1Report(start, end);
+      case ReportType.gstr3b:
+        return _gstr3bReport(start, end);
+      case ReportType.paymentSummary:
+        return _paymentSummaryReport(start, end);
     }
   }
 
@@ -1239,5 +1245,128 @@ class ReportRepositoryImpl implements ReportRepository {
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // GST Return Filing Reports
+  // ---------------------------------------------------------------------------
+
+  Future<ReportData> _gstr1Report(DateTime start, DateTime end) async {
+    final bills = await _dao.getBillsByDateRange(start, end);
+    final completedBills = bills.where((b) => !b.isReturn).toList();
+
+    final columns = ['Invoice #', 'Date', 'Taxable', 'CGST', 'SGST', 'IGST', 'Total'];
+    final rows = completedBills.map((b) {
+      return {
+        'Invoice #': b.billNumber,
+        'Date': DateFormat('dd MMM yyyy').format(b.billDate),
+        'Taxable': '₹${(b.subtotal / 100).toStringAsFixed(2)}',
+        'CGST': '₹${(b.cgstAmount / 100).toStringAsFixed(2)}',
+        'SGST': '₹${(b.sgstAmount / 100).toStringAsFixed(2)}',
+        'IGST': '₹${(b.igstAmount / 100).toStringAsFixed(2)}',
+        'Total': '₹${(b.totalAmount / 100).toStringAsFixed(2)}',
+      };
+    }).toList();
+
+    final totalTaxable = completedBills.fold<int>(0, (s, b) => s + b.subtotal);
+    final totalCgst = completedBills.fold<int>(0, (s, b) => s + b.cgstAmount);
+    final totalSgst = completedBills.fold<int>(0, (s, b) => s + b.sgstAmount);
+    final totalIgst = completedBills.fold<int>(0, (s, b) => s + b.igstAmount);
+    final totalValue = completedBills.fold<int>(0, (s, b) => s + b.totalAmount);
+
+    return ReportData(
+      type: ReportType.gstr1,
+      title: 'GSTR-1 (Outward Supplies)',
+      description: 'Sales invoice details for GST filing — ${DateFormat('MMM yyyy').format(start)}',
+      generatedAt: DateTime.now(),
+      columns: columns,
+      rows: rows,
+      summary: {
+        'Total Invoices': completedBills.length,
+        'Taxable Value': '₹${(totalTaxable / 100).toStringAsFixed(2)}',
+        'CGST': '₹${(totalCgst / 100).toStringAsFixed(2)}',
+        'SGST': '₹${(totalSgst / 100).toStringAsFixed(2)}',
+        'IGST': '₹${(totalIgst / 100).toStringAsFixed(2)}',
+        'Invoice Value': '₹${(totalValue / 100).toStringAsFixed(2)}',
+      },
+    );
+  }
+
+  Future<ReportData> _gstr3bReport(DateTime start, DateTime end) async {
+    final bills = await _dao.getBillsByDateRange(start, end);
+    final completedBills = bills.where((b) => !b.isReturn).toList();
+
+    final totalTaxableSales = completedBills.fold<int>(0, (s, b) => s + b.subtotal);
+    final totalCgstOnSales = completedBills.fold<int>(0, (s, b) => s + b.cgstAmount);
+    final totalSgstOnSales = completedBills.fold<int>(0, (s, b) => s + b.sgstAmount);
+    final totalIgstOnSales = completedBills.fold<int>(0, (s, b) => s + b.igstAmount);
+    final totalTax = totalCgstOnSales + totalSgstOnSales + totalIgstOnSales;
+
+    final columns = ['Description', 'Taxable Value', 'CGST', 'SGST', 'IGST', 'Total Tax'];
+    final rows = [
+      {
+        'Description': 'Outward Taxable Supplies',
+        'Taxable Value': '₹${(totalTaxableSales / 100).toStringAsFixed(2)}',
+        'CGST': '₹${(totalCgstOnSales / 100).toStringAsFixed(2)}',
+        'SGST': '₹${(totalSgstOnSales / 100).toStringAsFixed(2)}',
+        'IGST': '₹${(totalIgstOnSales / 100).toStringAsFixed(2)}',
+        'Total Tax': '₹${(totalTax / 100).toStringAsFixed(2)}',
+      },
+    ];
+
+    return ReportData(
+      type: ReportType.gstr3b,
+      title: 'GSTR-3B Summary',
+      description: 'Monthly GST return summary — ${DateFormat('MMM yyyy').format(start)}',
+      generatedAt: DateTime.now(),
+      columns: columns,
+      rows: rows,
+      summary: {
+        'Taxable Sales': '₹${(totalTaxableSales / 100).toStringAsFixed(2)}',
+        'Total CGST': '₹${(totalCgstOnSales / 100).toStringAsFixed(2)}',
+        'Total SGST': '₹${(totalSgstOnSales / 100).toStringAsFixed(2)}',
+        'Total IGST': '₹${(totalIgstOnSales / 100).toStringAsFixed(2)}',
+        'Net Tax Payable': '₹${(totalTax / 100).toStringAsFixed(2)}',
+      },
+    );
+  }
+
+  Future<ReportData> _paymentSummaryReport(DateTime start, DateTime end) async {
+    final columns = ['Party', 'Type', 'Mode', 'Amount', 'Date', 'Reference'];
+    final rows = <Map<String, dynamic>>[];
+
+    // Get bills as payments received
+    final bills = await _dao.getBillsByDateRange(start, end);
+    final completedBills = bills.where((b) => !b.isReturn).toList();
+
+    for (final b in completedBills) {
+      if (b.paidAmount > 0) {
+        rows.add({
+          'Party': b.customerName ?? 'Walk-in',
+          'Type': 'Received',
+          'Mode': b.paymentMode,
+          'Amount': '₹${(b.paidAmount / 100).toStringAsFixed(2)}',
+          'Date': DateFormat('dd MMM yyyy').format(b.billDate),
+          'Reference': b.billNumber,
+        });
+      }
+    }
+
+    final totalReceived = completedBills.fold<int>(0, (s, b) => s + b.paidAmount);
+    final totalDue = completedBills.fold<int>(0, (s, b) => s + b.dueAmount);
+
+    return ReportData(
+      type: ReportType.paymentSummary,
+      title: 'Payment Summary',
+      description: 'Payment collection and dues — ${DateFormat('MMM yyyy').format(start)}',
+      generatedAt: DateTime.now(),
+      columns: columns,
+      rows: rows,
+      summary: {
+        'Total Received': '₹${(totalReceived / 100).toStringAsFixed(2)}',
+        'Total Outstanding': '₹${(totalDue / 100).toStringAsFixed(2)}',
+        'Total Bills': completedBills.length,
+      },
+    );
   }
 }

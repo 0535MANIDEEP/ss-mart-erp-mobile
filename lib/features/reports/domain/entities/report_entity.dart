@@ -21,6 +21,9 @@ enum ReportType {
   supplierWise,
   purchaseVsSales,
   hsnGstSummary,
+  gstr1,
+  gstr3b,
+  paymentSummary,
 }
 
 class ReportData extends Equatable {

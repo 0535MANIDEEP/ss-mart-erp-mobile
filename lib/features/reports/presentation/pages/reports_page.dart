@@ -66,6 +66,9 @@ class ReportsPage extends StatelessWidget {
               ReportItem('GST Report', 'Tax collected/paid', ReportType.gstReport),
               ReportItem('HSN-wise GST Summary', 'HSN-wise tax breakdown for GSTR filing', ReportType.hsnGstSummary),
               ReportItem('Expense Report', 'Category-wise expenses', ReportType.expenseReport),
+              ReportItem('GSTR-1', 'Outward supplies for GST filing', ReportType.gstr1),
+              ReportItem('GSTR-3B', 'Monthly GST return summary', ReportType.gstr3b),
+              ReportItem('Payment Summary', 'Collection and dues', ReportType.paymentSummary),
             ],
           ),
 
