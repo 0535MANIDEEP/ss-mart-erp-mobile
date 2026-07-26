@@ -24,6 +24,7 @@ enum ReportType {
   gstr1,
   gstr3b,
   paymentSummary,
+  commissionSummary,
 }
 
 class ReportData extends Equatable {

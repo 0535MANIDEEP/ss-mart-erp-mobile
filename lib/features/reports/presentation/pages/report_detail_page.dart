@@ -259,6 +259,8 @@ class ReportDetailPage extends StatelessWidget {
         return 'GSTR-3B';
       case ReportType.paymentSummary:
         return 'Payment Summary';
+      case ReportType.commissionSummary:
+        return 'Commission Summary';
     }
   }
 }

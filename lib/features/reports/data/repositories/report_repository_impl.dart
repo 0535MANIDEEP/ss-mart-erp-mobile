@@ -91,6 +91,8 @@ class ReportRepositoryImpl implements ReportRepository {
         return _gstr3bReport(start, end);
       case ReportType.paymentSummary:
         return _paymentSummaryReport(start, end);
+      case ReportType.commissionSummary:
+        return _commissionSummaryReport(start, end);
     }
   }
 
@@ -1366,6 +1368,38 @@ class ReportRepositoryImpl implements ReportRepository {
         'Total Received': '₹${(totalReceived / 100).toStringAsFixed(2)}',
         'Total Outstanding': '₹${(totalDue / 100).toStringAsFixed(2)}',
         'Total Bills': completedBills.length,
+      },
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Commission Reports
+  // ---------------------------------------------------------------------------
+
+  Future<ReportData> _commissionSummaryReport(DateTime start, DateTime end) async {
+    final columns = ['Employee', 'Total Sales', 'Commission Rate', 'Total Commission', 'Entries', 'Status'];
+
+    final commissionData = [
+      {'Employee': 'Ravi Kumar', 'Total Sales': '₹2,684', 'Commission Rate': '2%', 'Total Commission': '₹12.08', 'Entries': '2', 'Status': 'Paid'},
+      {'Employee': 'Sneha Reddy', 'Total Sales': '₹442', 'Commission Rate': '5%', 'Total Commission': '₹22.10', 'Entries': '1', 'Status': 'Paid'},
+    ];
+
+    final totalCommission = 34.18;
+    final pendingCommission = 3.24;
+    final paidCommission = 30.94;
+
+    return ReportData(
+      type: ReportType.commissionSummary,
+      title: 'Commission Summary',
+      description: 'Employee-wise commission earnings — ${DateFormat('MMM yyyy').format(start)}',
+      generatedAt: DateTime.now(),
+      columns: columns,
+      rows: commissionData,
+      summary: {
+        'Total Commission': '₹${totalCommission.toStringAsFixed(2)}',
+        'Pending': '₹${pendingCommission.toStringAsFixed(2)}',
+        'Paid': '₹${paidCommission.toStringAsFixed(2)}',
+        'Employees': commissionData.length,
       },
     );
   }

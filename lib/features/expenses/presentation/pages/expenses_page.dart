@@ -229,7 +229,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
   void _navigateToForm(BuildContext context, {dynamic expense}) {
     Navigator.push(
       context,
-      MaterialPageRoute(
+      MaterialPageRoute<dynamic>(
         builder: (_) => BlocProvider.value(
           value: context.read<ExpensesBloc>(),
           child: ExpenseFormPage(expense: expense),

@@ -226,6 +226,14 @@ class MainScaffold extends StatelessWidget {
                 },
               ),
               ListTile(
+                leading: const Icon(Icons.notifications_outlined),
+                title: const Text('Notification Settings'),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.go('/settings/notifications');
+                },
+              ),
+              ListTile(
                 leading: const Icon(Icons.settings),
                 title: const Text('Settings'),
                 onTap: () {

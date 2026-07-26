@@ -74,6 +74,16 @@ class ReportsPage extends StatelessWidget {
 
           _buildReportCard(
             context,
+            title: 'Commission Reports',
+            icon: Icons.attach_money,
+            color: Colors.amber,
+            reports: [
+              ReportItem('Commission Summary', 'Employee-wise commissions', ReportType.commissionSummary),
+            ],
+          ),
+
+          _buildReportCard(
+            context,
             title: 'Employee Reports',
             icon: Icons.badge,
             color: Colors.teal,

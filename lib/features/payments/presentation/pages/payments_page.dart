@@ -17,8 +17,6 @@ class PaymentsPage extends StatefulWidget {
 }
 
 class _PaymentsPageState extends State<PaymentsPage> {
-  String? _filterType;
-
   @override
   void initState() {
     super.initState();
@@ -183,7 +181,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
   }
 
   void _showRecordPaymentDialog(BuildContext context) {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       builder: (ctx) => Padding(
