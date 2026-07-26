@@ -49,4 +49,19 @@ abstract class SyncRepository {
 
   /// Returns sync items that are in 'conflict' status and need manual resolution.
   Future<Either<Failure, List<SyncQueueItem>>> getConflictItems();
+
+  /// Pulls server-side changes since [lastSyncTimestamp] and upserts them
+  /// into the local Drift database.
+  ///
+  /// [entityTypes] specifies which entity types to download (e.g.,
+  /// `['product', 'customer', 'bill']`). If empty, defaults to the core
+  /// entity types. [limit] caps the number of items per entity type.
+  ///
+  /// Returns the total number of entities upserted, or a [ServerFailure]
+  /// if the download or parsing fails.
+  Future<Either<Failure, int>> downloadFromServer({
+    DateTime? lastSyncTimestamp,
+    List<String>? entityTypes,
+    int limit = 100,
+  });
 }

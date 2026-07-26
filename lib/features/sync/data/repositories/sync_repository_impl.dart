@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dartz/dartz.dart';
 import 'package:http/http.dart' as http;
 
@@ -236,6 +238,7 @@ class SyncRepositoryImpl implements SyncRepository {
   ///
   /// Uses [Environment.current.baseUrl] to resolve the correct API host
   /// for the active deployment environment (dev/staging/production).
+  /// Attaches the JWT access token from the active auth session when available.
   Future<bool> _syncToServer(db.SyncQueueData row) async {
     final baseUrl = Environment.current.baseUrl;
     final endpoint = _getEndpoint(row.entityType);
@@ -243,6 +246,19 @@ class SyncRepositoryImpl implements SyncRepository {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
+
+    // Attach JWT access token from the active session if one exists.
+    // Sync may run before login (e.g., queued offline items) — in that
+    // case the header is simply omitted and the backend will accept it
+    // if the endpoint has [AllowAnonymous].
+    try {
+      final session = await _dao.getActiveSession();
+      if (session?.accessToken != null) {
+        headers['Authorization'] = 'Bearer ${session!.accessToken}';
+      }
+    } catch (_) {
+      // Token read failure should not block sync — proceed without auth header.
+    }
 
     final uri = Uri.parse(
       row.operation == 'create'
@@ -262,6 +278,10 @@ class SyncRepositoryImpl implements SyncRepository {
       default:
         return false;
     }
+
+    // 401 indicates the JWT is expired or invalid — the item should be
+    // retried after re-login, so we treat it as a transient failure.
+    if (response.statusCode == 401) return false;
 
     return response.statusCode >= 200 && response.statusCode < 300;
   }
@@ -394,6 +414,423 @@ class SyncRepositoryImpl implements SyncRepository {
     } catch (e) {
       return Left(CacheFailure(message: e.toString()));
     }
+  }
+
+  /// Pulls server-side changes since [lastSyncTimestamp] and upserts them
+  /// into the local Drift database.
+  ///
+  /// Calls `POST /api/Sync/download` with the given timestamp and entity types,
+  /// then iterates through the returned items, deserializing each payload and
+  /// inserting or updating the corresponding local table row.
+  ///
+  /// Backend monetary values are in **rupees** (decimal); the local DB stores
+  /// **paise** (integer), so all monetary fields are multiplied by 100.
+  @override
+  Future<Either<Failure, int>> downloadFromServer({
+    DateTime? lastSyncTimestamp,
+    List<String>? entityTypes,
+    int limit = 100,
+  }) async {
+    try {
+      final baseUrl = Environment.current.baseUrl;
+      final headers = <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+
+      // Attach JWT if available
+      try {
+        final session = await _dao.getActiveSession();
+        if (session?.accessToken != null) {
+          headers['Authorization'] = 'Bearer ${session!.accessToken}';
+        }
+      } catch (_) {}
+
+      final since = lastSyncTimestamp ?? DateTime.utc(2000, 1, 1);
+      final types = entityTypes ?? const [
+        'product', 'customer', 'bill', 'supplier',
+        'category', 'employee', 'stock',
+      ];
+
+      final body = jsonEncode({
+        'lastSyncTimestamp': since.toIso8601String(),
+        'entityTypes': types,
+        'limit': limit,
+      });
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/Sync/download'),
+        headers: headers,
+        body: body,
+      );
+
+      if (response.statusCode != 200) {
+        return Left(ServerFailure(
+          message: 'Download failed: ${response.statusCode}',
+        ));
+      }
+
+      final json = jsonDecode(response.body) as Map<String, dynamic>;
+      final data = json['data'] as Map<String, dynamic>? ?? {};
+      final items = data['items'] as List<dynamic>? ?? [];
+      var upsertedCount = 0;
+
+      for (final item in items) {
+        try {
+          final entityType = item['entityType'] as String? ?? '';
+          final payload = item['payload'];
+          if (payload == null) continue;
+
+          final didUpsert = await _upsertDownloadedEntity(entityType, payload);
+          if (didUpsert) upsertedCount++;
+        } catch (_) {
+          // Individual entity failures should not abort the batch.
+        }
+      }
+
+      return Right(upsertedCount);
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
+  /// Dispatches a single downloaded entity payload to the appropriate
+  /// table upsert handler based on [entityType].
+  ///
+  /// Returns `true` if the entity was successfully upserted.
+  Future<bool> _upsertDownloadedEntity(
+    String entityType,
+    dynamic payload,
+  ) async {
+    final map = payload as Map<String, dynamic>;
+    switch (entityType.toLowerCase()) {
+      case 'product':
+        return _upsertProduct(map);
+      case 'customer':
+        return _upsertCustomer(map);
+      case 'bill':
+        return _upsertBill(map);
+      case 'supplier':
+        return _upsertSupplier(map);
+      case 'category':
+        return _upsertCategory(map);
+      case 'employee':
+        return _upsertEmployee(map);
+      default:
+        return false;
+    }
+  }
+
+  /// Upserts a Product from server JSON into the local Drift [Products] table.
+  ///
+  /// Converts decimal rupee values (MRP, sellingPrice, purchasePrice) to
+  /// integer paise by multiplying by 100 and rounding.
+  Future<bool> _upsertProduct(Map<String, dynamic> map) async {
+    final id = map['id'] as String? ?? '';
+    if (id.isEmpty) return false;
+
+    final existing = await _dao.getProductById(id);
+    final mrp = _decimalToPaise(map['mrp']);
+    final sellingPrice = _decimalToPaise(map['sellingPrice']);
+    final purchasePrice = _decimalToPaise(map['purchasePrice']);
+    final version = (map['version'] as num?)?.toInt() ?? 1;
+
+    if (existing == null) {
+      await _dao.insertProduct(db.ProductsCompanion.insert(
+        id: id,
+        name: map['name'] as String? ?? '',
+        hsnCode: map['hsnCode'] as String? ?? '',
+        mrp: mrp,
+        sellingPrice: sellingPrice,
+        createdAt: _parseDateTime(map['createdAt']) ?? DateTime.now(),
+        updatedAt: _parseDateTime(map['updatedAt']) ?? DateTime.now(),
+        sku: db.Value(map['sku'] as String?),
+        barcode: db.Value(map['barcode'] as String?),
+        unit: db.Value(map['unit'] as String? ?? 'PCS'),
+        packSize: db.Value((map['packSize'] as num?)?.toDouble() ?? 1.0),
+        purchasePrice: db.Value(purchasePrice),
+        taxRate: db.Value((map['taxRate'] as num?)?.toDouble() ?? 0.0),
+        taxType: db.Value(map['taxType'] as String? ?? 'GST'),
+        categoryId: db.Value(map['categoryId'] as String?),
+        supplierId: db.Value(map['supplierId'] as String?),
+        reorderLevel: db.Value((map['reorderLevel'] as num?)?.toInt() ?? 10),
+        currentStock: db.Value((map['currentStock'] as num?)?.toInt() ?? 0),
+        isActive: db.Value(map['isActive'] as bool? ?? true),
+        version: db.Value(version),
+        syncStatus: const db.Value('synced'),
+      ));
+    } else if (version > existing.version) {
+      await _dao.updateProduct(db.ProductsCompanion(
+        id: db.Value(id),
+        name: db.Value(map['name'] as String? ?? existing.name),
+        sku: db.Value(map['sku'] as String? ?? existing.sku),
+        barcode: db.Value(map['barcode'] as String? ?? existing.barcode),
+        hsnCode: db.Value(map['hsnCode'] as String? ?? existing.hsnCode),
+        unit: db.Value(map['unit'] as String? ?? existing.unit),
+        packSize: db.Value((map['packSize'] as num?)?.toDouble() ?? existing.packSize),
+        mrp: db.Value(mrp),
+        sellingPrice: db.Value(sellingPrice),
+        purchasePrice: db.Value(purchasePrice),
+        taxRate: db.Value((map['taxRate'] as num?)?.toDouble() ?? existing.taxRate),
+        taxType: db.Value(map['taxType'] as String? ?? existing.taxType),
+        categoryId: db.Value(map['categoryId'] as String?),
+        supplierId: db.Value(map['supplierId'] as String?),
+        reorderLevel: db.Value((map['reorderLevel'] as num?)?.toInt() ?? existing.reorderLevel),
+        currentStock: db.Value((map['currentStock'] as num?)?.toInt() ?? existing.currentStock),
+        isActive: db.Value(map['isActive'] as bool? ?? existing.isActive),
+        version: db.Value(version),
+        syncStatus: const db.Value('synced'),
+        updatedAt: db.Value(_parseDateTime(map['updatedAt']) ?? DateTime.now()),
+      ));
+    }
+    return true;
+  }
+
+  /// Upserts a Customer from server JSON into the local Drift [Customers] table.
+  Future<bool> _upsertCustomer(Map<String, dynamic> map) async {
+    final id = map['id'] as String? ?? '';
+    if (id.isEmpty) return false;
+
+    final existing = await _dao.getCustomerById(id);
+    final version = (map['version'] as num?)?.toInt() ?? 1;
+
+    if (existing == null) {
+      await _dao.insertCustomer(db.CustomersCompanion.insert(
+        id: id,
+        name: map['name'] as String? ?? '',
+        createdAt: _parseDateTime(map['createdAt']) ?? DateTime.now(),
+        updatedAt: _parseDateTime(map['updatedAt']) ?? DateTime.now(),
+        phone: db.Value(map['phone'] as String?),
+        email: db.Value(map['email'] as String?),
+        address: db.Value(map['address'] as String?),
+        city: db.Value(map['city'] as String?),
+        state: db.Value(map['state'] as String?),
+        pincode: db.Value(map['pincode'] as String?),
+        gstin: db.Value(map['gstin'] as String?),
+        type: db.Value(map['type'] as String? ?? 'B2C'),
+        creditLimit: db.Value(_decimalToPaise(map['creditLimit'])),
+        currentBalance: db.Value(_decimalToPaise(map['currentBalance'])),
+        loyaltyPoints: db.Value((map['loyaltyPoints'] as num?)?.toInt() ?? 0),
+        loyaltyCardNumber: db.Value(map['loyaltyCardNumber'] as String?),
+        isActive: db.Value(map['isActive'] as bool? ?? true),
+        version: db.Value(version),
+        syncStatus: const db.Value('synced'),
+      ));
+    } else if (version > existing.version) {
+      await _dao.updateCustomer(db.CustomersCompanion(
+        id: db.Value(id),
+        name: db.Value(map['name'] as String? ?? existing.name),
+        phone: db.Value(map['phone'] as String? ?? existing.phone),
+        email: db.Value(map['email'] as String? ?? existing.email),
+        address: db.Value(map['address'] as String? ?? existing.address),
+        city: db.Value(map['city'] as String? ?? existing.city),
+        state: db.Value(map['state'] as String? ?? existing.state),
+        pincode: db.Value(map['pincode'] as String? ?? existing.pincode),
+        gstin: db.Value(map['gstin'] as String? ?? existing.gstin),
+        type: db.Value(map['type'] as String? ?? existing.type),
+        creditLimit: db.Value(_decimalToPaise(map['creditLimit'])),
+        currentBalance: db.Value(_decimalToPaise(map['currentBalance'])),
+        loyaltyPoints: db.Value((map['loyaltyPoints'] as num?)?.toInt() ?? existing.loyaltyPoints),
+        loyaltyCardNumber: db.Value(map['loyaltyCardNumber'] as String? ?? existing.loyaltyCardNumber),
+        isActive: db.Value(map['isActive'] as bool? ?? existing.isActive),
+        version: db.Value(version),
+        syncStatus: const db.Value('synced'),
+        updatedAt: db.Value(_parseDateTime(map['updatedAt']) ?? DateTime.now()),
+      ));
+    }
+    return true;
+  }
+
+  /// Upserts a Bill from server JSON into the local Drift [Bills] table.
+  ///
+  /// Bills are append-only — if the bill already exists locally, it is skipped
+  /// to preserve the integrity of the local audit trail.
+  Future<bool> _upsertBill(Map<String, dynamic> map) async {
+    final id = map['id'] as String? ?? '';
+    if (id.isEmpty) return false;
+
+    final existing = await _dao.getBillById(id);
+    if (existing != null) return false; // Bills are immutable once synced
+
+    await _dao.insertBill(db.BillsCompanion.insert(
+      id: id,
+      billNumber: map['billNumber'] as String? ?? '',
+      billDate: _parseDateTime(map['billDate']) ?? DateTime.now(),
+      subtotal: _decimalToPaise(map['subtotal']),
+      totalAmount: _decimalToPaise(map['totalAmount']),
+      createdBy: map['createdBy'] as String? ?? 'system',
+      createdAt: _parseDateTime(map['createdAt']) ?? DateTime.now(),
+      updatedAt: _parseDateTime(map['updatedAt']) ?? DateTime.now(),
+      invoiceNumber: db.Value(map['invoiceNumber'] as String?),
+      customerId: db.Value(map['customerId'] as String?),
+      taxAmount: db.Value(_decimalToPaise(map['taxAmount'])),
+      cgstAmount: db.Value(_decimalToPaise(map['cgstAmount'])),
+      sgstAmount: db.Value(_decimalToPaise(map['sgstAmount'])),
+      igstAmount: db.Value(_decimalToPaise(map['igstAmount'])),
+      taxRuleVersion: db.Value(map['taxRuleVersion'] as String? ?? 'v1'),
+      discountAmount: db.Value(_decimalToPaise(map['discountAmount'])),
+      roundOff: db.Value(_decimalToPaise(map['roundOff'])),
+      paidAmount: db.Value(_decimalToPaise(map['paidAmount'])),
+      dueAmount: db.Value(_decimalToPaise(map['dueAmount'])),
+      paymentMode: db.Value(map['paymentMode'] as String? ?? 'CASH'),
+      status: db.Value(map['status'] as String? ?? 'completed'),
+      isReturn: db.Value(map['isReturn'] as bool? ?? false),
+      referenceBillId: db.Value(map['referenceBillId'] as String?),
+      version: db.Value((map['version'] as num?)?.toInt() ?? 1),
+      syncStatus: const db.Value('synced'),
+    ));
+    return true;
+  }
+
+  /// Upserts a Supplier from server JSON into the local Drift [Suppliers] table.
+  Future<bool> _upsertSupplier(Map<String, dynamic> map) async {
+    final id = map['id'] as String? ?? '';
+    if (id.isEmpty) return false;
+
+    final existing = await _dao.getSupplierById(id);
+    final version = (map['version'] as num?)?.toInt() ?? 1;
+
+    if (existing == null) {
+      await _dao.insertSupplier(db.SuppliersCompanion.insert(
+        id: id,
+        name: map['name'] as String? ?? '',
+        createdAt: _parseDateTime(map['createdAt']) ?? DateTime.now(),
+        updatedAt: _parseDateTime(map['updatedAt']) ?? DateTime.now(),
+        phone: db.Value(map['phone'] as String?),
+        email: db.Value(map['email'] as String?),
+        address: db.Value(map['address'] as String?),
+        city: db.Value(map['city'] as String?),
+        state: db.Value(map['state'] as String?),
+        gstin: db.Value(map['gstin'] as String?),
+        pan: db.Value(map['pan'] as String?),
+        outstandingBalance: db.Value(_decimalToPaise(map['currentBalance'])),
+        isActive: db.Value(map['isActive'] as bool? ?? true),
+        version: db.Value(version),
+        syncStatus: const db.Value('synced'),
+      ));
+    } else if (version > existing.version) {
+      await _dao.updateSupplier(db.SuppliersCompanion(
+        id: db.Value(id),
+        name: db.Value(map['name'] as String? ?? existing.name),
+        phone: db.Value(map['phone'] as String? ?? existing.phone),
+        email: db.Value(map['email'] as String? ?? existing.email),
+        address: db.Value(map['address'] as String? ?? existing.address),
+        city: db.Value(map['city'] as String? ?? existing.city),
+        state: db.Value(map['state'] as String? ?? existing.state),
+        gstin: db.Value(map['gstin'] as String? ?? existing.gstin),
+        pan: db.Value(map['pan'] as String? ?? existing.pan),
+        outstandingBalance: db.Value(_decimalToPaise(map['currentBalance'])),
+        isActive: db.Value(map['isActive'] as bool? ?? existing.isActive),
+        version: db.Value(version),
+        syncStatus: const db.Value('synced'),
+        updatedAt: db.Value(_parseDateTime(map['updatedAt']) ?? DateTime.now()),
+      ));
+    }
+    return true;
+  }
+
+  /// Upserts a Category from server JSON into the local Drift [Categories] table.
+  Future<bool> _upsertCategory(Map<String, dynamic> map) async {
+    final id = map['id'] as String? ?? '';
+    if (id.isEmpty) return false;
+
+    final existing = await _dao.getCategoryById(id);
+    final version = (map['version'] as num?)?.toInt() ?? 1;
+
+    if (existing == null) {
+      await _dao.insertCategory(db.CategoriesCompanion.insert(
+        id: id,
+        name: map['name'] as String? ?? '',
+        createdAt: _parseDateTime(map['createdAt']) ?? DateTime.now(),
+        updatedAt: _parseDateTime(map['updatedAt']) ?? DateTime.now(),
+        description: db.Value(map['description'] as String?),
+        colorCode: db.Value(map['color'] as String? ?? '#4CAF50'),
+        iconName: db.Value(map['icon'] as String? ?? 'category'),
+        sortOrder: db.Value((map['sortOrder'] as num?)?.toInt() ?? 0),
+        version: db.Value(version),
+        syncStatus: const db.Value('synced'),
+      ));
+    } else if (version > existing.version) {
+      await _dao.updateCategory(db.CategoriesCompanion(
+        id: db.Value(id),
+        name: db.Value(map['name'] as String? ?? existing.name),
+        description: db.Value(map['description'] as String? ?? existing.description),
+        colorCode: db.Value(map['color'] as String? ?? existing.colorCode),
+        iconName: db.Value(map['icon'] as String? ?? existing.iconName),
+        sortOrder: db.Value((map['sortOrder'] as num?)?.toInt() ?? existing.sortOrder),
+        version: db.Value(version),
+        syncStatus: const db.Value('synced'),
+        updatedAt: db.Value(_parseDateTime(map['updatedAt']) ?? DateTime.now()),
+      ));
+    }
+    return true;
+  }
+
+  /// Upserts an Employee from server JSON into the local Drift [Employees] table.
+  Future<bool> _upsertEmployee(Map<String, dynamic> map) async {
+    final id = map['id'] as String? ?? '';
+    if (id.isEmpty) return false;
+
+    final existing = await _dao.getEmployeeById(id);
+    final version = (map['version'] as num?)?.toInt() ?? 1;
+
+    if (existing == null) {
+      await _dao.insertEmployee(db.EmployeesCompanion.insert(
+        id: id,
+        name: map['fullName'] as String? ?? map['name'] as String? ?? '',
+        createdAt: _parseDateTime(map['createdAt']) ?? DateTime.now(),
+        updatedAt: _parseDateTime(map['updatedAt']) ?? DateTime.now(),
+        phone: db.Value(map['phone'] as String?),
+        email: db.Value(map['email'] as String?),
+        role: db.Value(map['role'] as String? ?? 'cashier'),
+        pin: db.Value(map['pin'] as String?),
+        isActive: db.Value(map['isActive'] as bool? ?? true),
+        version: db.Value(version),
+        syncStatus: const db.Value('synced'),
+      ));
+    } else if (version > existing.version) {
+      await _dao.updateEmployee(db.EmployeesCompanion(
+        id: db.Value(id),
+        name: db.Value(map['fullName'] as String? ?? map['name'] as String? ?? existing.name),
+        phone: db.Value(map['phone'] as String? ?? existing.phone),
+        email: db.Value(map['email'] as String? ?? existing.email),
+        role: db.Value(map['role'] as String? ?? existing.role),
+        pin: db.Value(map['pin'] as String? ?? existing.pin),
+        isActive: db.Value(map['isActive'] as bool? ?? existing.isActive),
+        version: db.Value(version),
+        syncStatus: const db.Value('synced'),
+        updatedAt: db.Value(_parseDateTime(map['updatedAt']) ?? DateTime.now()),
+      ));
+    }
+    return true;
+  }
+
+  /// Converts a decimal/num value from rupees to integer paise.
+  ///
+  /// Backend stores monetary values as `decimal` in rupees (e.g., 190.50).
+  /// The local Drift schema stores them as `integer` in paise (e.g., 19050).
+  /// Returns 0 if the input is null or not a valid number.
+  int _decimalToPaise(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value * 100;
+    if (value is double) return (value * 100).round();
+    if (value is num) return (value.toDouble() * 100).round();
+    return 0;
+  }
+
+  /// Safely parses an ISO-8601 date string into a [DateTime], returning
+  /// `null` if the input is null or unparseable.
+  DateTime? _parseDateTime(dynamic value) {
+    if (value == null) return null;
+    if (value is DateTime) return value;
+    if (value is String) {
+      try {
+        return DateTime.parse(value);
+      } catch (_) {
+        return null;
+      }
+    }
+    return null;
   }
 
   /// Converts a Drift database row [SyncQueueData] into a domain [SyncQueueItem] entity.
