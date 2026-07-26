@@ -830,6 +830,14 @@ class BillingView extends StatelessWidget {
                   style: TextStyle(color: Colors.green[700], fontSize: 14),
                 ),
               ),
+            if (state.hasCustomer)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  'Customer: ${state.customerName}',
+                  style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                ),
+              ),
             const SizedBox(height: 20),
             const Text('Select Payment Mode:', style: TextStyle(fontSize: 14)),
             const SizedBox(height: 12),

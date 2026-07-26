@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import '../../domain/entities/bill_entity.dart';
 import '../../domain/entities/gst_calculator.dart';
 import '../../domain/usecases/bill_usecases.dart';
+import '../../../customers/domain/usecases/get_customer_by_id_usecase.dart';
 
 part 'billing_event.dart';
 part 'billing_state.dart';
@@ -10,6 +11,7 @@ part 'billing_state.dart';
 class BillingBloc extends Bloc<BillingEvent, BillingState> {
   final CreateBillUseCase _createBillUseCase;
   final GetRecentBillsUseCase _getRecentBillsUseCase;
+  final GetCustomerByIdUseCase _getCustomerByIdUseCase;
 
   // Default seller state code (company's state - Karnataka = 29)
   static const String _defaultSellerStateCode = '29';
@@ -17,8 +19,10 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
   BillingBloc({
     required CreateBillUseCase createBillUseCase,
     required GetRecentBillsUseCase getRecentBillsUseCase,
+    required GetCustomerByIdUseCase getCustomerByIdUseCase,
   })  : _createBillUseCase = createBillUseCase,
         _getRecentBillsUseCase = getRecentBillsUseCase,
+        _getCustomerByIdUseCase = getCustomerByIdUseCase,
         super(BillingInitial()) {
     on<InitializeBilling>(_onInitializeBilling);
     on<AddToCart>(_onAddToCart);
@@ -553,6 +557,29 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
       default:
         paidAmount = currentState.totalAmount;
         dueAmount = 0;
+    }
+
+    if (event.paymentMode == 'CREDIT' &&
+        currentState.customerId != null &&
+        currentState.customerId!.isNotEmpty) {
+      final customerResult = await _getCustomerByIdUseCase(
+        currentState.customerId!,
+      );
+      customerResult.fold(
+        (failure) {},
+        (customer) {
+          final newBalance = customer.currentBalance + dueAmount;
+          if (customer.creditLimit > 0 && newBalance > customer.creditLimit) {
+            final exceeded = newBalance - customer.creditLimit;
+            emit(BillingError(
+              message: 'Credit limit exceeded by \u20B9$exceeded. '
+                  'Current balance: \u20B9${customer.currentBalance}, '
+                  'Limit: \u20B9${customer.creditLimit}',
+            ));
+          }
+        },
+      );
+      if (state is BillingError) return;
     }
 
     final params = CreateBillParams(

@@ -15,6 +15,7 @@ void registerBillingFeature(GetIt sl) {
   sl.registerFactory(() => BillingBloc(
     createBillUseCase: sl(),
     getRecentBillsUseCase: sl(),
+    getCustomerByIdUseCase: sl(),
   ));
   sl.registerLazySingleton(() => CreateBillUseCase(sl()));
   sl.registerLazySingleton(() => GetBillByIdUseCase(sl()));
