@@ -1,7 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:http/http.dart' as http;
-import '../../../../database/app_database.dart' as db;
+
+import '../../../../core/config/environment.dart';
 import '../../../../core/error/failures.dart';
+import '../../../../database/app_database.dart' as db;
 import '../../domain/entities/sync_queue_entity.dart';
 import '../../domain/repositories/sync_repository.dart';
 
@@ -231,34 +233,32 @@ class SyncRepositoryImpl implements SyncRepository {
   /// Determines the HTTP method and URL based on the entity type and
   /// operation. Uses POST for 'create', PUT for 'update', DELETE for 'delete'.
   /// Returns true if the server responds with a 2xx status code.
+  ///
+  /// Uses [Environment.current.baseUrl] to resolve the correct API host
+  /// for the active deployment environment (dev/staging/production).
   Future<bool> _syncToServer(db.SyncQueueData row) async {
-    final baseUrl = 'https://api.ssmart.com/v1';
+    final baseUrl = Environment.current.baseUrl;
     final endpoint = _getEndpoint(row.entityType);
-    final url = Uri.parse('$baseUrl/$endpoint/${row.entityId}');
+    final headers = <String, String>{
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+
+    final uri = Uri.parse(
+      row.operation == 'create'
+          ? '$baseUrl/$endpoint'
+          : '$baseUrl/$endpoint/${row.entityId}',
+    );
 
     http.Response response;
 
     switch (row.operation) {
       case 'create':
-        response = await http.post(
-          Uri.parse('$baseUrl/$endpoint'),
-          headers: {'Content-Type': 'application/json'},
-          body: row.payload,
-        );
-        break;
+        response = await http.post(uri, headers: headers, body: row.payload);
       case 'update':
-        response = await http.put(
-          url,
-          headers: {'Content-Type': 'application/json'},
-          body: row.payload,
-        );
-        break;
+        response = await http.put(uri, headers: headers, body: row.payload);
       case 'delete':
-        response = await http.delete(
-          url,
-          headers: {'Content-Type': 'application/json'},
-        );
-        break;
+        response = await http.delete(uri, headers: headers);
       default:
         return false;
     }
@@ -266,29 +266,48 @@ class SyncRepositoryImpl implements SyncRepository {
     return response.statusCode >= 200 && response.statusCode < 300;
   }
 
-  /// Maps an entity type to its API endpoint path segment.
+  /// Maps a sync queue entity type to its backend API route segment.
+  ///
+  /// Backend controllers use PascalCase pluralized names under `/api/`.
+  /// This mapping normalizes both singular and plural forms received from
+  /// the queue into the correct route path.
   String _getEndpoint(String entityType) {
-    switch (entityType) {
+    switch (entityType.toLowerCase()) {
       case 'product':
       case 'products':
-        return 'products';
+        return 'Products';
       case 'customer':
       case 'customers':
-        return 'customers';
+        return 'Customers';
       case 'bill':
       case 'bills':
-        return 'bills';
+        return 'Bills';
       case 'stock':
-        return 'stock';
+      case 'stocks':
+        return 'Inventory';
       case 'employee':
       case 'employees':
-        return 'employees';
+        return 'Employees';
       case 'supplier':
       case 'suppliers':
-        return 'suppliers';
+        return 'Suppliers';
+      case 'category':
+      case 'categories':
+        return 'Categories';
       case 'purchase':
       case 'purchases':
-        return 'purchases';
+      case 'purchaseorder':
+        return 'Purchases';
+      case 'salesorder':
+      case 'salesorders':
+        return 'SalesOrders';
+      case 'challan':
+      case 'challans':
+      case 'deliverychallan':
+        return 'Challans';
+      case 'ledger':
+      case 'ledgerentry':
+        return 'Accounting';
       default:
         return entityType;
     }
@@ -299,7 +318,7 @@ class SyncRepositoryImpl implements SyncRepository {
     try {
       final existing = await _dao.getSyncItemById(itemId);
       if (existing == null) {
-        return Left(CacheFailure(message: 'Sync item not found'));
+        return const Left(CacheFailure(message: 'Sync item not found'));
       }
 
       if (useLocal) {
