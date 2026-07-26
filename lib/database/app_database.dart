@@ -78,6 +78,10 @@ class Products extends Table {
   IntColumn get mrp => integer()();
   IntColumn get sellingPrice => integer()();
   IntColumn get purchasePrice => integer().nullable()();
+  IntColumn get rateA => integer().nullable()();
+  IntColumn get rateB => integer().nullable()();
+  IntColumn get rateC => integer().nullable()();
+  IntColumn get wholesaleRate => integer().nullable()();
   RealColumn get taxRate => real().withDefault(const Constant(0.0))();
   TextColumn get taxType => text().withDefault(const Constant('GST'))();
   TextColumn get categoryId => text().nullable()();
@@ -155,6 +159,10 @@ class Bills extends Table {
   IntColumn get subtotal => integer()();
   IntColumn get taxAmount => integer().withDefault(const Constant(0))();
   IntColumn get discountAmount => integer().withDefault(const Constant(0))();
+  RealColumn get discount1 => real().withDefault(const Constant(0.0))();
+  RealColumn get discount2 => real().withDefault(const Constant(0.0))();
+  RealColumn get discount3 => real().withDefault(const Constant(0.0))();
+  RealColumn get discount4 => real().withDefault(const Constant(0.0))();
   IntColumn get roundOff => integer().withDefault(const Constant(0))();
   IntColumn get totalAmount => integer()();
   IntColumn get paidAmount => integer().withDefault(const Constant(0))();
@@ -190,6 +198,8 @@ class BillItems extends Table {
   IntColumn get unitPrice => integer()();
   RealColumn get taxRate => real().withDefault(const Constant(0.0))();
   RealColumn get discountPercent => real().withDefault(const Constant(0.0))();
+  RealColumn get discount1 => real().withDefault(const Constant(0.0))();
+  RealColumn get discount2 => real().withDefault(const Constant(0.0))();
   IntColumn get discountAmount => integer().withDefault(const Constant(0))();
   IntColumn get taxAmount => integer().withDefault(const Constant(0))();
   IntColumn get totalAmount => integer()();
@@ -807,9 +817,382 @@ class ProductImages extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Multi-rate pricing per product.
+///
+/// Stores multiple pricing tiers (A, B, C, wholesale, special) for each
+/// product. Supports time-bound effective periods and minimum/maximum
+/// quantity thresholds for rate application.
+class ProductRates extends Table {
+  TextColumn get id => text()();
+  TextColumn get productId => text()();
+  TextColumn get rateType => text()(); // 'A', 'B', 'C', 'wholesale', 'special'
+  TextColumn get rateName => text()();
+  IntColumn get rateValue => integer()(); // in paise
+  RealColumn get minQty => real().withDefault(const Constant(1.0))();
+  RealColumn get maxQty => real().nullable()();
+  DateTimeColumn get effectiveFrom => dateTime().nullable()();
+  DateTimeColumn get effectiveTo => dateTime().nullable()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+  IntColumn get version => integer().withDefault(const Constant(1))();
+  TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Party-wise rate overrides.
+///
+/// Allows per-customer/product rate overrides that take precedence over
+/// standard [ProductRates]. Useful for negotiated pricing with specific
+/// customers or customer groups.
+class PartyRates extends Table {
+  TextColumn get id => text()();
+  TextColumn get customerId => text()();
+  TextColumn get productId => text()();
+  TextColumn get rateType => text()();
+  IntColumn get rateValue => integer()(); // in paise
+  DateTimeColumn get effectiveFrom => dateTime().nullable()();
+  DateTimeColumn get effectiveTo => dateTime().nullable()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Discount configuration rules.
+///
+/// Defines discount rules that can be applied at bill, item, category,
+/// or product level. Supports percentage, fixed, and buy_x_get_y types.
+/// Rules can be scoped to specific parties, products, or categories.
+class DiscountRules extends Table {
+  TextColumn get id => text()();
+  TextColumn get ruleName => text()();
+  TextColumn get discountType => text()(); // 'percentage', 'fixed', 'buy_x_get_y'
+  RealColumn get discountValue => real()();
+  TextColumn get appliesTo => text()(); // 'bill', 'item', 'category', 'product'
+  RealColumn get minQty => real().nullable()();
+  IntColumn get minAmount => integer().nullable()();
+  TextColumn get partyId => text().nullable()();
+  TextColumn get productId => text().nullable()();
+  TextColumn get categoryId => text().nullable()();
+  DateTimeColumn get startDate => dateTime().nullable()();
+  DateTimeColumn get endDate => dateTime().nullable()();
+  IntColumn get priority => integer().withDefault(const Constant(0))();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Scheme configuration rules.
+///
+/// Defines promotional schemes like buy_x_get_y, qty_rate, discount,
+/// and combo offers. Schemes can be triggered by quantity thresholds
+/// and apply to bills, items, categories, or specific products.
+class SchemeRules extends Table {
+  TextColumn get id => text()();
+  TextColumn get schemeName => text()();
+  TextColumn get schemeType => text()(); // 'buy_x_get_y', 'qty_rate', 'discount', 'combo'
+  RealColumn get triggerQty => real()();
+  RealColumn get freeQty => real().withDefault(const Constant(0.0))();
+  RealColumn get discountPercent => real().withDefault(const Constant(0.0))();
+  IntColumn get discountAmount => integer().withDefault(const Constant(0))();
+  TextColumn get appliesTo => text()(); // 'bill', 'item', 'category', 'product'
+  TextColumn get productId => text().nullable()();
+  TextColumn get categoryId => text().nullable()();
+  DateTimeColumn get startDate => dateTime().nullable()();
+  DateTimeColumn get endDate => dateTime().nullable()();
+  IntColumn get priority => integer().withDefault(const Constant(0))();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Bundle pack header table.
+///
+/// Defines bundle packs that group multiple products at a combined price.
+/// Bundle items are stored in [BundlePackItems]. Bundle pricing can be
+/// used as an alternative to individual product pricing.
+class BundlePacks extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  TextColumn get description => text().nullable()();
+  IntColumn get totalPrice => integer()(); // in paise
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+  IntColumn get version => integer().withDefault(const Constant(1))();
+  TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Bundle pack line items.
+///
+/// Each row represents a product within a [BundlePacks] bundle, with
+/// its quantity and optional price override. If [priceOverride] is null,
+/// the bundle total price is distributed proportionally among items.
+class BundlePackItems extends Table {
+  TextColumn get id => text()();
+  TextColumn get bundleId => text()();
+  TextColumn get productId => text()();
+  RealColumn get quantity => real()();
+  IntColumn get priceOverride => integer().nullable()(); // in paise, null = use bundle total
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Custom invoice format definitions.
+///
+/// Stores JSON layout definitions for different invoice formats (GUI,
+/// DMP, thermal). Supports various document types (invoice, challan,
+/// estimate, label) and page sizes (A4, thermal, etc.).
+class InvoiceFormats extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  TextColumn get formatType => text()(); // 'gui', 'dmp', 'thermal'
+  TextColumn get documentType => text()(); // 'invoice', 'challan', 'estimate', 'label'
+  TextColumn get pageSize => text()(); // 'A4', 'A3', 'A5', 'legal', 'letter', 'thermal_58', 'thermal_72'
+  TextColumn get content => text()(); // JSON layout definition
+  BoolColumn get isDefault => boolean().withDefault(const Constant(false))();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Barcode label template definitions.
+///
+/// Stores template configurations for printing barcode labels, price tags,
+/// and shelf labels. Supports various barcode formats (CODE128, EAN13, QR,
+/// GS1) with customizable dimensions.
+class BarcodeLabelTemplates extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  TextColumn get templateType => text()(); // 'barcode', 'price_tag', 'shelf_label'
+  TextColumn get barcodeFormat => text()(); // 'CODE128', 'EAN13', 'QR', 'GS1'
+  RealColumn get width => real()(); // mm
+  RealColumn get height => real()(); // mm
+  TextColumn get content => text()(); // JSON layout definition
+  BoolColumn get isDefault => boolean().withDefault(const Constant(false))();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Delivery challan header table.
+///
+/// Records goods delivery challans that track items dispatched to customers.
+/// Challans can be partially converted to invoices and support status tracking
+/// through pending → partial → converted → cancelled lifecycle.
+class Challans extends Table {
+  TextColumn get id => text()();
+  TextColumn get challanNumber => text()();
+  TextColumn get customerId => text().nullable()();
+  TextColumn get customerName => text().nullable()();
+  DateTimeColumn get challanDate => dateTime()();
+  IntColumn get subtotal => integer()();
+  IntColumn get taxAmount => integer().withDefault(const Constant(0))();
+  IntColumn get totalAmount => integer()();
+  TextColumn get status => text().withDefault(const Constant('pending'))(); // pending, partial, converted, cancelled
+  TextColumn get referenceBillId => text().nullable()();
+  TextColumn get notes => text().nullable()();
+  TextColumn get createdBy => text()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+  IntColumn get version => integer().withDefault(const Constant(1))();
+  TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Challan line items.
+///
+/// Each row represents a product in a [Challans] delivery, with quantity,
+/// pricing, and conversion tracking. [convertedQuantity] tracks how much
+/// of this item has been invoiced against the challan.
+class ChallanItems extends Table {
+  TextColumn get id => text()();
+  TextColumn get challanId => text()();
+  TextColumn get productId => text()();
+  TextColumn get productName => text()();
+  RealColumn get quantity => real()();
+  IntColumn get unitPrice => integer()();
+  RealColumn get taxRate => real().withDefault(const Constant(0.0))();
+  IntColumn get taxAmount => integer().withDefault(const Constant(0))();
+  IntColumn get totalAmount => integer()();
+  TextColumn get batchNumber => text().nullable()();
+  RealColumn get convertedQuantity => real().withDefault(const Constant(0.0))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Sales order header table.
+///
+/// Records sales orders that track customer orders before invoicing.
+/// Orders can be partially fulfilled and support status tracking
+/// through pending → confirmed → dispatched → delivered → cancelled.
+class SalesOrders extends Table {
+  TextColumn get id => text()();
+  TextColumn get orderNumber => text()();
+  TextColumn get customerId => text().nullable()();
+  TextColumn get customerName => text().nullable()();
+  DateTimeColumn get orderDate => dateTime()();
+  DateTimeColumn get expectedDeliveryDate => dateTime().nullable()();
+  IntColumn get subtotal => integer()();
+  IntColumn get taxAmount => integer().withDefault(const Constant(0))();
+  IntColumn get discountAmount => integer().withDefault(const Constant(0))();
+  IntColumn get totalAmount => integer()();
+  TextColumn get status => text().withDefault(const Constant('pending'))();
+  TextColumn get notes => text().nullable()();
+  TextColumn get createdBy => text()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+  IntColumn get version => integer().withDefault(const Constant(1))();
+  TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Purchase order header table.
+///
+/// Records purchase orders to suppliers for inventory replenishment.
+/// Orders can be partially received and support status tracking
+/// through pending → confirmed → received → cancelled.
+class PurchaseOrders extends Table {
+  TextColumn get id => text()();
+  TextColumn get orderNumber => text()();
+  TextColumn get supplierId => text().nullable()();
+  TextColumn get supplierName => text().nullable()();
+  DateTimeColumn get orderDate => dateTime()();
+  DateTimeColumn get expectedDeliveryDate => dateTime().nullable()();
+  IntColumn get subtotal => integer()();
+  IntColumn get taxAmount => integer().withDefault(const Constant(0))();
+  IntColumn get discountAmount => integer().withDefault(const Constant(0))();
+  IntColumn get totalAmount => integer()();
+  TextColumn get status => text().withDefault(const Constant('pending'))();
+  TextColumn get notes => text().nullable()();
+  TextColumn get createdBy => text()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+  IntColumn get version => integer().withDefault(const Constant(1))();
+  TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Line items for both sales and purchase orders.
+///
+/// Each row represents a product in either a [SalesOrders] or [PurchaseOrders]
+/// order, with pricing, tax, and delivery tracking. [orderType] distinguishes
+/// between 'sales' and 'purchase' orders.
+class OrderItems extends Table {
+  TextColumn get id => text()();
+  TextColumn get orderId => text()();
+  TextColumn get orderType => text()(); // 'sales' or 'purchase'
+  TextColumn get productId => text()();
+  TextColumn get productName => text()();
+  RealColumn get quantity => real()();
+  IntColumn get unitPrice => integer()();
+  RealColumn get taxRate => real().withDefault(const Constant(0.0))();
+  IntColumn get taxAmount => integer().withDefault(const Constant(0))();
+  IntColumn get totalAmount => integer()();
+  TextColumn get batchNumber => text().nullable()();
+  RealColumn get deliveredQuantity => real().withDefault(const Constant(0.0))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Track last 4 purchase deals per product per supplier.
+///
+/// Records historical purchase data for each product-supplier combination,
+/// enabling price trend analysis and informed procurement decisions.
+/// Retains the last 4 deals per product per supplier.
+class PurchaseDealHistory extends Table {
+  TextColumn get id => text()();
+  TextColumn get productId => text()();
+  TextColumn get supplierId => text()();
+  TextColumn get purchaseId => text()();
+  IntColumn get purchasePrice => integer()(); // in paise
+  RealColumn get quantity => real()();
+  RealColumn get discountPercent => real().withDefault(const Constant(0.0))();
+  IntColumn get taxAmount => integer().withDefault(const Constant(0))();
+  DateTimeColumn get dealDate => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Sales order line items.
+///
+/// Each row represents a product in a [SalesOrders] order, with pricing,
+/// tax, discount, and delivery tracking. Separate table for clarity and
+/// dedicated sales order item queries.
+class SalesOrderItems extends Table {
+  TextColumn get id => text()();
+  TextColumn get orderId => text()();
+  TextColumn get productId => text()();
+  TextColumn get productName => text()();
+  RealColumn get quantity => real()();
+  IntColumn get unitPrice => integer()();
+  RealColumn get taxRate => real().withDefault(const Constant(0.0))();
+  IntColumn get discountAmount => integer().withDefault(const Constant(0))();
+  IntColumn get taxAmount => integer().withDefault(const Constant(0))();
+  IntColumn get totalAmount => integer()();
+  TextColumn get batchNumber => text().nullable()();
+  RealColumn get deliveredQuantity => real().withDefault(const Constant(0.0))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Purchase order line items.
+///
+/// Each row represents a product in a [PurchaseOrders] order, with pricing,
+/// tax, discount, and receiving tracking. Separate table for clarity and
+/// dedicated purchase order item queries.
+class PurchaseOrderItems extends Table {
+  TextColumn get id => text()();
+  TextColumn get orderId => text()();
+  TextColumn get productId => text()();
+  TextColumn get productName => text()();
+  RealColumn get quantity => real()();
+  IntColumn get unitPrice => integer()();
+  RealColumn get taxRate => real().withDefault(const Constant(0.0))();
+  IntColumn get discountAmount => integer().withDefault(const Constant(0))();
+  IntColumn get taxAmount => integer().withDefault(const Constant(0))();
+  IntColumn get totalAmount => integer()();
+  TextColumn get batchNumber => text().nullable()();
+  RealColumn get receivedQuantity => real().withDefault(const Constant(0.0))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 /// Main Drift database class for the SS Mart ERP application.
 ///
-/// This class registers all 32 tables and provides the migration strategy.
+/// This class registers all 48 tables and provides the migration strategy.
 /// It extends the generated `_$AppDatabase` which provides the table
 /// accessors, DAOs, and query builders.
 ///
@@ -825,10 +1208,11 @@ class ProductImages extends Table {
 ///
 /// ## Migration
 ///
-/// Currently at schema version 2. The [MigrationStrategy] creates all
+/// Currently at schema version 3. The [MigrationStrategy] creates all
 /// tables on first run via [onCreate]. [onUpgrade] handles migrations
 /// from v1 to v2 (adds imageUrl column to Products and creates 14 new
-/// tables).
+/// tables) and v2 to v3 (adds pricing/discount columns to Products,
+/// Bills, BillItems and creates 16 new tables).
 @DriftDatabase(tables: [
   Products,
   Customers,
@@ -862,6 +1246,22 @@ class ProductImages extends Table {
   LoyaltyCards,
   NumberingConfig,
   ProductImages,
+  ProductRates,
+  PartyRates,
+  DiscountRules,
+  SchemeRules,
+  BundlePacks,
+  BundlePackItems,
+  InvoiceFormats,
+  BarcodeLabelTemplates,
+  Challans,
+  ChallanItems,
+  SalesOrders,
+  PurchaseOrders,
+  OrderItems,
+  PurchaseDealHistory,
+  SalesOrderItems,
+  PurchaseOrderItems,
 ])
 class AppDatabase extends _$AppDatabase {
   /// Production constructor — opens the on-disk SQLite database.
@@ -874,7 +1274,7 @@ class AppDatabase extends _$AppDatabase {
   /// Current database schema version. Increment this when adding/removing
   /// columns or tables, and add a migration step in [migration].
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   /// Migration strategy for schema lifecycle management.
   ///
@@ -910,6 +1310,41 @@ class AppDatabase extends _$AppDatabase {
             await m.createTable(loyaltyCards);
             await m.createTable(numberingConfig);
             await m.createTable(productImages);
+          }
+          if (from < 3) {
+            // Add new columns to Products table
+            await m.addColumn(products, products.rateA);
+            await m.addColumn(products, products.rateB);
+            await m.addColumn(products, products.rateC);
+            await m.addColumn(products, products.wholesaleRate);
+
+            // Add new columns to Bills table
+            await m.addColumn(bills, bills.discount1);
+            await m.addColumn(bills, bills.discount2);
+            await m.addColumn(bills, bills.discount3);
+            await m.addColumn(bills, bills.discount4);
+
+            // Add new columns to BillItems table
+            await m.addColumn(billItems, billItems.discount1);
+            await m.addColumn(billItems, billItems.discount2);
+
+            // Create all new v3 tables
+            await m.createTable(productRates);
+            await m.createTable(partyRates);
+            await m.createTable(discountRules);
+            await m.createTable(schemeRules);
+            await m.createTable(bundlePacks);
+            await m.createTable(bundlePackItems);
+            await m.createTable(invoiceFormats);
+            await m.createTable(barcodeLabelTemplates);
+            await m.createTable(challans);
+            await m.createTable(challanItems);
+            await m.createTable(salesOrders);
+            await m.createTable(purchaseOrders);
+            await m.createTable(orderItems);
+            await m.createTable(purchaseDealHistory);
+            await m.createTable(salesOrderItems);
+            await m.createTable(purchaseOrderItems);
           }
         },
       );

@@ -115,6 +115,10 @@ import '../core/services/backup_service.dart';
 import '../core/services/sync_service.dart';
 import '../core/services/network_monitor.dart';
 import '../core/services/bluetooth_printer_service.dart';
+import '../core/services/rate_engine.dart';
+import '../core/services/discount_engine.dart';
+import '../core/services/scheme_engine.dart';
+import '../core/services/bundle_pack_manager.dart';
 
 /// Dependency Injection container for the SS MART ERP application.
 ///
@@ -178,6 +182,30 @@ Future<void> init() async {
   );
   sl.registerLazySingleton<BluetoothPrinterService>(
     () => BluetoothPrinterService(),
+  );
+
+  // ─── Feature: Rate Engine (v2) ──────────────────────────────────────────
+  // Multi-rate pricing with party-wise overrides — Marg-style rate system.
+  sl.registerLazySingleton<RateEngine>(
+    () => RateEngine(dao: sl()),
+  );
+
+  // ─── Feature: Discount Engine (v2) ──────────────────────────────────────
+  // Multi-level discount calculations — 4 bill-level + item-level discounts.
+  sl.registerLazySingleton<DiscountEngine>(
+    () => DiscountEngine(dao: sl()),
+  );
+
+  // ─── Feature: Scheme Engine (v2) ────────────────────────────────────────
+  // Promotional scheme calculations — Buy X Get Y, volume, date-wise schemes.
+  sl.registerLazySingleton<SchemeEngine>(
+    () => SchemeEngine(dao: sl()),
+  );
+
+  // ─── Feature: Bundle Pack Manager (v2) ──────────────────────────────────
+  // Bundle pack creation, editing, and loading for billing.
+  sl.registerLazySingleton<BundlePackManager>(
+    () => BundlePackManager(dao: sl()),
   );
 
   // ─── Feature: Auth ────────────────────────────────────────────────────────

@@ -77,6 +77,21 @@ part 'database_dao.g.dart';
   LoyaltyCards,
   NumberingConfig,
   ProductImages,
+  ProductRates,
+  PartyRates,
+  DiscountRules,
+  SchemeRules,
+  BundlePacks,
+  BundlePackItems,
+  InvoiceFormats,
+  BarcodeLabelTemplates,
+  Challans,
+  ChallanItems,
+  SalesOrders,
+  SalesOrderItems,
+  PurchaseOrders,
+  PurchaseOrderItems,
+  PurchaseDealHistory,
 ])
 class DatabaseDao extends DatabaseAccessor<AppDatabase>
     with _$DatabaseDaoMixin {
@@ -983,4 +998,350 @@ class DatabaseDao extends DatabaseAccessor<AppDatabase>
             ..where((t) => t.productId.equals(productId))
             ..where((t) => t.isPrimary.equals(true)))
           .getSingleOrNull();
+
+  // ---------------------------------------------------------------------------
+  // ProductRates
+  // ---------------------------------------------------------------------------
+
+  Future<int> insertProductRate(ProductRatesCompanion entry) =>
+      into(productRates).insert(entry, mode: InsertMode.insertOrReplace);
+
+  Future<bool> updateProductRate(ProductRatesCompanion entry) =>
+      update(productRates).replace(entry);
+
+  Future<int> deleteProductRate(String id) =>
+      (delete(productRates)..where((t) => t.id.equals(id))).go();
+
+  Future<List<ProductRate>> getProductRatesByProduct(String productId) =>
+      (select(productRates)..where((t) => t.productId.equals(productId))).get();
+
+  Future<ProductRate?> getProductRateById(String id) =>
+      (select(productRates)..where((t) => t.id.equals(id))).getSingleOrNull();
+
+  Future<List<ProductRate>> getActiveProductRates() =>
+      (select(productRates)..where((t) => t.isActive.equals(true))).get();
+
+  Future<ProductRate?> getRateForProductAndType(String productId, String rateType) =>
+      (select(productRates)
+            ..where((t) => t.productId.equals(productId) & t.rateType.equals(rateType))
+            ..where((t) => t.isActive.equals(true)))
+          .getSingleOrNull();
+
+  // ---------------------------------------------------------------------------
+  // PartyRates
+  // ---------------------------------------------------------------------------
+
+  Future<int> insertPartyRate(PartyRatesCompanion entry) =>
+      into(partyRates).insert(entry, mode: InsertMode.insertOrReplace);
+
+  Future<bool> updatePartyRate(PartyRatesCompanion entry) =>
+      update(partyRates).replace(entry);
+
+  Future<int> deletePartyRate(String id) =>
+      (delete(partyRates)..where((t) => t.id.equals(id))).go();
+
+  Future<List<PartyRate>> getPartyRatesByCustomer(String customerId) =>
+      (select(partyRates)..where((t) => t.customerId.equals(customerId))).get();
+
+  Future<List<PartyRate>> getPartyRatesByProduct(String productId) =>
+      (select(partyRates)..where((t) => t.productId.equals(productId))).get();
+
+  Future<PartyRate?> getPartyRateForProduct(String customerId, String productId) =>
+      (select(partyRates)
+            ..where((t) => t.customerId.equals(customerId) & t.productId.equals(productId))
+            ..where((t) => t.isActive.equals(true)))
+          .getSingleOrNull();
+
+  // ---------------------------------------------------------------------------
+  // DiscountRules
+  // ---------------------------------------------------------------------------
+
+  Future<int> insertDiscountRule(DiscountRulesCompanion entry) =>
+      into(discountRules).insert(entry, mode: InsertMode.insertOrReplace);
+
+  Future<bool> updateDiscountRule(DiscountRulesCompanion entry) =>
+      update(discountRules).replace(entry);
+
+  Future<int> deleteDiscountRule(String id) =>
+      (delete(discountRules)..where((t) => t.id.equals(id))).go();
+
+  Future<DiscountRule?> getDiscountRuleById(String id) =>
+      (select(discountRules)..where((t) => t.id.equals(id))).getSingleOrNull();
+
+  Future<List<DiscountRule>> getAllActiveDiscountRules() =>
+      (select(discountRules)..where((t) => t.isActive.equals(true))).get();
+
+  Future<List<DiscountRule>> getDiscountRulesForProduct(String productId) =>
+      (select(discountRules)
+            ..where((t) => t.productId.equals(productId) & t.isActive.equals(true)))
+          .get();
+
+  Future<List<DiscountRule>> getDiscountRulesForCategory(String categoryId) =>
+      (select(discountRules)
+            ..where((t) => t.categoryId.equals(categoryId) & t.isActive.equals(true)))
+          .get();
+
+  Future<List<DiscountRule>> getDiscountRulesForParty(String partyId) =>
+      (select(discountRules)
+            ..where((t) => t.partyId.equals(partyId) & t.isActive.equals(true)))
+          .get();
+
+  // ---------------------------------------------------------------------------
+  // SchemeRules
+  // ---------------------------------------------------------------------------
+
+  Future<int> insertSchemeRule(SchemeRulesCompanion entry) =>
+      into(schemeRules).insert(entry, mode: InsertMode.insertOrReplace);
+
+  Future<bool> updateSchemeRule(SchemeRulesCompanion entry) =>
+      update(schemeRules).replace(entry);
+
+  Future<int> deleteSchemeRule(String id) =>
+      (delete(schemeRules)..where((t) => t.id.equals(id))).go();
+
+  Future<SchemeRule?> getSchemeRuleById(String id) =>
+      (select(schemeRules)..where((t) => t.id.equals(id))).getSingleOrNull();
+
+  Future<List<SchemeRule>> getAllActiveSchemeRules() =>
+      (select(schemeRules)..where((t) => t.isActive.equals(true))).get();
+
+  Future<List<SchemeRule>> getSchemesForProduct(String productId) =>
+      (select(schemeRules)
+            ..where((t) => t.productId.equals(productId) & t.isActive.equals(true))
+            ..orderBy([(t) => OrderingTerm.desc(t.priority)]))
+          .get();
+
+  Future<List<SchemeRule>> getSchemesForCategory(String categoryId) =>
+      (select(schemeRules)
+            ..where((t) => t.categoryId.equals(categoryId) & t.isActive.equals(true)))
+          .get();
+
+  // ---------------------------------------------------------------------------
+  // BundlePacks
+  // ---------------------------------------------------------------------------
+
+  Future<int> insertBundlePack(BundlePacksCompanion entry) =>
+      into(bundlePacks).insert(entry, mode: InsertMode.insertOrReplace);
+
+  Future<bool> updateBundlePack(BundlePacksCompanion entry) =>
+      update(bundlePacks).replace(entry);
+
+  Future<int> deleteBundlePack(String id) =>
+      (delete(bundlePacks)..where((t) => t.id.equals(id))).go();
+
+  Future<BundlePack?> getBundlePackById(String id) =>
+      (select(bundlePacks)..where((t) => t.id.equals(id))).getSingleOrNull();
+
+  Future<List<BundlePack>> getAllActiveBundlePacks() =>
+      (select(bundlePacks)..where((t) => t.isActive.equals(true))).get();
+
+  Future<List<BundlePack>> searchBundlePacks(String query) {
+    final q = '%$query%';
+    return (select(bundlePacks)
+          ..where((t) => t.name.like(q) & t.isActive.equals(true)))
+        .get();
+  }
+
+  // ---------------------------------------------------------------------------
+  // BundlePackItems
+  // ---------------------------------------------------------------------------
+
+  Future<int> insertBundlePackItem(BundlePackItemsCompanion entry) =>
+      into(bundlePackItems).insert(entry, mode: InsertMode.insertOrReplace);
+
+  Future<int> deleteBundlePackItems(String bundleId) =>
+      (delete(bundlePackItems)..where((t) => t.bundleId.equals(bundleId))).go();
+
+  Future<List<BundlePackItem>> getBundlePackItems(String bundleId) =>
+      (select(bundlePackItems)..where((t) => t.bundleId.equals(bundleId))).get();
+
+  // ---------------------------------------------------------------------------
+  // InvoiceFormats
+  // ---------------------------------------------------------------------------
+
+  Future<int> insertInvoiceFormat(InvoiceFormatsCompanion entry) =>
+      into(invoiceFormats).insert(entry, mode: InsertMode.insertOrReplace);
+
+  Future<bool> updateInvoiceFormat(InvoiceFormatsCompanion entry) =>
+      update(invoiceFormats).replace(entry);
+
+  Future<int> deleteInvoiceFormat(String id) =>
+      (delete(invoiceFormats)..where((t) => t.id.equals(id))).go();
+
+  Future<InvoiceFormat?> getInvoiceFormatById(String id) =>
+      (select(invoiceFormats)..where((t) => t.id.equals(id))).getSingleOrNull();
+
+  Future<List<InvoiceFormat>> getInvoiceFormatsByType(String documentType) =>
+      (select(invoiceFormats)
+            ..where((t) => t.documentType.equals(documentType) & t.isActive.equals(true)))
+          .get();
+
+  Future<InvoiceFormat?> getDefaultInvoiceFormat(String documentType) =>
+      (select(invoiceFormats)
+            ..where((t) => t.documentType.equals(documentType) & t.isDefault.equals(true)))
+          .getSingleOrNull();
+
+  // ---------------------------------------------------------------------------
+  // BarcodeLabelTemplates
+  // ---------------------------------------------------------------------------
+
+  Future<int> insertBarcodeLabelTemplate(BarcodeLabelTemplatesCompanion entry) =>
+      into(barcodeLabelTemplates).insert(entry, mode: InsertMode.insertOrReplace);
+
+  Future<bool> updateBarcodeLabelTemplate(BarcodeLabelTemplatesCompanion entry) =>
+      update(barcodeLabelTemplates).replace(entry);
+
+  Future<int> deleteBarcodeLabelTemplate(String id) =>
+      (delete(barcodeLabelTemplates)..where((t) => t.id.equals(id))).go();
+
+  Future<BarcodeLabelTemplate?> getBarcodeLabelTemplateById(String id) =>
+      (select(barcodeLabelTemplates)..where((t) => t.id.equals(id))).getSingleOrNull();
+
+  Future<List<BarcodeLabelTemplate>> getAllBarcodeLabelTemplates() =>
+      (select(barcodeLabelTemplates)..where((t) => t.isActive.equals(true))).get();
+
+  Future<BarcodeLabelTemplate?> getDefaultBarcodeLabelTemplate() =>
+      (select(barcodeLabelTemplates)..where((t) => t.isDefault.equals(true))).getSingleOrNull();
+
+  // ---------------------------------------------------------------------------
+  // Challans
+  // ---------------------------------------------------------------------------
+
+  Future<int> insertChallan(ChallansCompanion entry) =>
+      into(challans).insert(entry, mode: InsertMode.insertOrReplace);
+
+  Future<bool> updateChallan(ChallansCompanion entry) =>
+      update(challans).replace(entry);
+
+  Future<int> deleteChallan(String id) =>
+      (delete(challans)..where((t) => t.id.equals(id))).go();
+
+  Future<Challan?> getChallanById(String id) =>
+      (select(challans)..where((t) => t.id.equals(id))).getSingleOrNull();
+
+  Future<List<Challan>> getAllChallans() =>
+      (select(challans)..orderBy([(t) => OrderingTerm.desc(t.createdAt)])).get();
+
+  Future<List<Challan>> getPendingChallans() =>
+      (select(challans)..where((t) => t.status.equals('pending'))).get();
+
+  Future<List<Challan>> getChallansByCustomer(String customerId) =>
+      (select(challans)..where((t) => t.customerId.equals(customerId))).get();
+
+  // ---------------------------------------------------------------------------
+  // ChallanItems
+  // ---------------------------------------------------------------------------
+
+  Future<int> insertChallanItem(ChallanItemsCompanion entry) =>
+      into(challanItems).insert(entry, mode: InsertMode.insertOrReplace);
+
+  Future<int> deleteChallanItems(String challanId) =>
+      (delete(challanItems)..where((t) => t.challanId.equals(challanId))).go();
+
+  Future<List<ChallanItem>> getChallanItems(String challanId) =>
+      (select(challanItems)..where((t) => t.challanId.equals(challanId))).get();
+
+  // ---------------------------------------------------------------------------
+  // SalesOrders
+  // ---------------------------------------------------------------------------
+
+  Future<int> insertSalesOrder(SalesOrdersCompanion entry) =>
+      into(salesOrders).insert(entry, mode: InsertMode.insertOrReplace);
+
+  Future<bool> updateSalesOrder(SalesOrdersCompanion entry) =>
+      update(salesOrders).replace(entry);
+
+  Future<int> deleteSalesOrder(String id) =>
+      (delete(salesOrders)..where((t) => t.id.equals(id))).go();
+
+  Future<SalesOrder?> getSalesOrderById(String id) =>
+      (select(salesOrders)..where((t) => t.id.equals(id))).getSingleOrNull();
+
+  Future<List<SalesOrder>> getAllSalesOrders() =>
+      (select(salesOrders)..orderBy([(t) => OrderingTerm.desc(t.createdAt)])).get();
+
+  Future<List<SalesOrder>> getPendingSalesOrders() =>
+      (select(salesOrders)..where((t) => t.status.equals('pending'))).get();
+
+  Future<List<SalesOrder>> getSalesOrdersByCustomer(String customerId) =>
+      (select(salesOrders)..where((t) => t.customerId.equals(customerId))).get();
+
+  // ---------------------------------------------------------------------------
+  // SalesOrderItems
+  // ---------------------------------------------------------------------------
+
+  Future<int> insertSalesOrderItem(SalesOrderItemsCompanion entry) =>
+      into(salesOrderItems).insert(entry, mode: InsertMode.insertOrReplace);
+
+  Future<int> deleteSalesOrderItems(String orderId) =>
+      (delete(salesOrderItems)..where((t) => t.orderId.equals(orderId))).go();
+
+  Future<List<SalesOrderItem>> getSalesOrderItems(String orderId) =>
+      (select(salesOrderItems)..where((t) => t.orderId.equals(orderId))).get();
+
+  // ---------------------------------------------------------------------------
+  // PurchaseOrders
+  // ---------------------------------------------------------------------------
+
+  Future<int> insertPurchaseOrder(PurchaseOrdersCompanion entry) =>
+      into(purchaseOrders).insert(entry, mode: InsertMode.insertOrReplace);
+
+  Future<bool> updatePurchaseOrder(PurchaseOrdersCompanion entry) =>
+      update(purchaseOrders).replace(entry);
+
+  Future<int> deletePurchaseOrder(String id) =>
+      (delete(purchaseOrders)..where((t) => t.id.equals(id))).go();
+
+  Future<PurchaseOrder?> getPurchaseOrderById(String id) =>
+      (select(purchaseOrders)..where((t) => t.id.equals(id))).getSingleOrNull();
+
+  Future<List<PurchaseOrder>> getAllPurchaseOrders() =>
+      (select(purchaseOrders)..orderBy([(t) => OrderingTerm.desc(t.createdAt)])).get();
+
+  Future<List<PurchaseOrder>> getPendingPurchaseOrders() =>
+      (select(purchaseOrders)..where((t) => t.status.equals('pending'))).get();
+
+  Future<List<PurchaseOrder>> getPurchaseOrdersBySupplier(String supplierId) =>
+      (select(purchaseOrders)..where((t) => t.supplierId.equals(supplierId))).get();
+
+  // ---------------------------------------------------------------------------
+  // PurchaseOrderItems
+  // ---------------------------------------------------------------------------
+
+  Future<int> insertPurchaseOrderItem(PurchaseOrderItemsCompanion entry) =>
+      into(purchaseOrderItems).insert(entry, mode: InsertMode.insertOrReplace);
+
+  Future<int> deletePurchaseOrderItems(String orderId) =>
+      (delete(purchaseOrderItems)..where((t) => t.orderId.equals(orderId))).go();
+
+  Future<List<PurchaseOrderItem>> getPurchaseOrderItems(String orderId) =>
+      (select(purchaseOrderItems)..where((t) => t.orderId.equals(orderId))).get();
+
+  // ---------------------------------------------------------------------------
+  // PurchaseDealHistory
+  // ---------------------------------------------------------------------------
+
+  Future<int> insertPurchaseDeal(PurchaseDealHistoryCompanion entry) =>
+      into(purchaseDealHistory).insert(entry, mode: InsertMode.insertOrReplace);
+
+  Future<List<PurchaseDealHistoryData>> getDealHistoryForProduct(String productId, {int limit = 4}) =>
+      (select(purchaseDealHistory)
+            ..where((t) => t.productId.equals(productId))
+            ..orderBy([(t) => OrderingTerm.desc(t.dealDate)])
+            ..limit(limit))
+          .get();
+
+  Future<List<PurchaseDealHistoryData>> getDealHistoryForSupplier(String supplierId) =>
+      (select(purchaseDealHistory)
+            ..where((t) => t.supplierId.equals(supplierId))
+            ..orderBy([(t) => OrderingTerm.desc(t.dealDate)]))
+          .get();
+
+  Future<List<PurchaseDealHistoryData>> getDealHistoryForProductSupplier(
+          String productId, String supplierId, {int limit = 4}) =>
+      (select(purchaseDealHistory)
+            ..where((t) => t.productId.equals(productId) & t.supplierId.equals(supplierId))
+            ..orderBy([(t) => OrderingTerm.desc(t.dealDate)])
+            ..limit(limit))
+          .get();
 }

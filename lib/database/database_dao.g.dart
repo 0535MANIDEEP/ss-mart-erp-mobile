@@ -42,6 +42,24 @@ mixin _$DatabaseDaoMixin on DatabaseAccessor<AppDatabase> {
   $LoyaltyCardsTable get loyaltyCards => attachedDatabase.loyaltyCards;
   $NumberingConfigTable get numberingConfig => attachedDatabase.numberingConfig;
   $ProductImagesTable get productImages => attachedDatabase.productImages;
+  $ProductRatesTable get productRates => attachedDatabase.productRates;
+  $PartyRatesTable get partyRates => attachedDatabase.partyRates;
+  $DiscountRulesTable get discountRules => attachedDatabase.discountRules;
+  $SchemeRulesTable get schemeRules => attachedDatabase.schemeRules;
+  $BundlePacksTable get bundlePacks => attachedDatabase.bundlePacks;
+  $BundlePackItemsTable get bundlePackItems => attachedDatabase.bundlePackItems;
+  $InvoiceFormatsTable get invoiceFormats => attachedDatabase.invoiceFormats;
+  $BarcodeLabelTemplatesTable get barcodeLabelTemplates =>
+      attachedDatabase.barcodeLabelTemplates;
+  $ChallansTable get challans => attachedDatabase.challans;
+  $ChallanItemsTable get challanItems => attachedDatabase.challanItems;
+  $SalesOrdersTable get salesOrders => attachedDatabase.salesOrders;
+  $SalesOrderItemsTable get salesOrderItems => attachedDatabase.salesOrderItems;
+  $PurchaseOrdersTable get purchaseOrders => attachedDatabase.purchaseOrders;
+  $PurchaseOrderItemsTable get purchaseOrderItems =>
+      attachedDatabase.purchaseOrderItems;
+  $PurchaseDealHistoryTable get purchaseDealHistory =>
+      attachedDatabase.purchaseDealHistory;
   DatabaseDaoManager get managers => DatabaseDaoManager(this);
 }
 
@@ -123,4 +141,41 @@ class DatabaseDaoManager {
           _db.attachedDatabase, _db.numberingConfig);
   $$ProductImagesTableTableManager get productImages =>
       $$ProductImagesTableTableManager(_db.attachedDatabase, _db.productImages);
+  $$ProductRatesTableTableManager get productRates =>
+      $$ProductRatesTableTableManager(_db.attachedDatabase, _db.productRates);
+  $$PartyRatesTableTableManager get partyRates =>
+      $$PartyRatesTableTableManager(_db.attachedDatabase, _db.partyRates);
+  $$DiscountRulesTableTableManager get discountRules =>
+      $$DiscountRulesTableTableManager(_db.attachedDatabase, _db.discountRules);
+  $$SchemeRulesTableTableManager get schemeRules =>
+      $$SchemeRulesTableTableManager(_db.attachedDatabase, _db.schemeRules);
+  $$BundlePacksTableTableManager get bundlePacks =>
+      $$BundlePacksTableTableManager(_db.attachedDatabase, _db.bundlePacks);
+  $$BundlePackItemsTableTableManager get bundlePackItems =>
+      $$BundlePackItemsTableTableManager(
+          _db.attachedDatabase, _db.bundlePackItems);
+  $$InvoiceFormatsTableTableManager get invoiceFormats =>
+      $$InvoiceFormatsTableTableManager(
+          _db.attachedDatabase, _db.invoiceFormats);
+  $$BarcodeLabelTemplatesTableTableManager get barcodeLabelTemplates =>
+      $$BarcodeLabelTemplatesTableTableManager(
+          _db.attachedDatabase, _db.barcodeLabelTemplates);
+  $$ChallansTableTableManager get challans =>
+      $$ChallansTableTableManager(_db.attachedDatabase, _db.challans);
+  $$ChallanItemsTableTableManager get challanItems =>
+      $$ChallanItemsTableTableManager(_db.attachedDatabase, _db.challanItems);
+  $$SalesOrdersTableTableManager get salesOrders =>
+      $$SalesOrdersTableTableManager(_db.attachedDatabase, _db.salesOrders);
+  $$SalesOrderItemsTableTableManager get salesOrderItems =>
+      $$SalesOrderItemsTableTableManager(
+          _db.attachedDatabase, _db.salesOrderItems);
+  $$PurchaseOrdersTableTableManager get purchaseOrders =>
+      $$PurchaseOrdersTableTableManager(
+          _db.attachedDatabase, _db.purchaseOrders);
+  $$PurchaseOrderItemsTableTableManager get purchaseOrderItems =>
+      $$PurchaseOrderItemsTableTableManager(
+          _db.attachedDatabase, _db.purchaseOrderItems);
+  $$PurchaseDealHistoryTableTableManager get purchaseDealHistory =>
+      $$PurchaseDealHistoryTableTableManager(
+          _db.attachedDatabase, _db.purchaseDealHistory);
 }
