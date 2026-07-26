@@ -226,6 +226,22 @@ class MainScaffold extends StatelessWidget {
                 },
               ),
               ListTile(
+                leading: const Icon(Icons.inventory_2),
+                title: const Text('Expiry Processing'),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.go('/inventory/expiry-processing');
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.point_of_sale),
+                title: const Text('Day-End / Cash Register'),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.go('/day-end');
+                },
+              ),
+              ListTile(
                 leading: const Icon(Icons.notifications_outlined),
                 title: const Text('Notification Settings'),
                 onTap: () {

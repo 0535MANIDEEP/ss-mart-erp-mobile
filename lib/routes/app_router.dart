@@ -14,6 +14,8 @@ import '../features/inventory/presentation/pages/stock_transfer_page.dart';
 import '../features/inventory/presentation/pages/physical_count_page.dart';
 import '../features/inventory/presentation/pages/stock_audit_trail_page.dart';
 import '../features/inventory/presentation/pages/expiry_alert_page.dart';
+import '../features/inventory/presentation/pages/expiry_processing_page.dart';
+import '../features/inventory/presentation/pages/day_end_page.dart';
 import '../features/inventory/presentation/pages/batch_selection_page.dart';
 import '../features/employees/presentation/pages/employee_list_page.dart';
 import '../features/employees/presentation/pages/attendance_page.dart';
@@ -150,6 +152,16 @@ final GoRouter appRouter = GoRouter(
           path: '/inventory/expiry-alerts',
           name: 'expiry-alerts',
           builder: (context, state) => const ExpiryAlertPage(),
+        ),
+        GoRoute(
+          path: '/inventory/expiry-processing',
+          name: 'expiry-processing',
+          builder: (context, state) => const ExpiryProcessingPage(),
+        ),
+        GoRoute(
+          path: '/day-end',
+          name: 'day-end',
+          builder: (context, state) => const DayEndPage(),
         ),
         GoRoute(
           path: '/inventory/batch-selection',
