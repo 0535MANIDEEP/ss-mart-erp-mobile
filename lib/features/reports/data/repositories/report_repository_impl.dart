@@ -91,12 +91,15 @@ class ReportRepositoryImpl implements ReportRepository {
         .where((b) => b.status == 'completed' && !b.isReturn)
         .toList();
 
-    final columns = ['Bill Number', 'Customer', 'Amount', 'Payment', 'Date'];
+    final columns = ['Bill Number', 'Customer', 'Amount', 'CGST', 'SGST', 'IGST', 'Payment', 'Date'];
     final rows = completedBills
         .map((b) => {
               'Bill Number': b.billNumber,
               'Customer': b.customerName ?? 'Walk-in',
               'Amount': (b.totalAmount / 100).toStringAsFixed(2),
+              'CGST': b.cgstAmount > 0 ? (b.cgstAmount / 100).toStringAsFixed(2) : '-',
+              'SGST': b.sgstAmount > 0 ? (b.sgstAmount / 100).toStringAsFixed(2) : '-',
+              'IGST': b.igstAmount > 0 ? (b.igstAmount / 100).toStringAsFixed(2) : '-',
               'Payment': b.paymentMode,
               'Date': DateFormat('dd MMM yyyy HH:mm').format(b.billDate),
             })
@@ -106,6 +109,12 @@ class ReportRepositoryImpl implements ReportRepository {
         completedBills.fold<int>(0, (sum, b) => sum + b.totalAmount);
     final totalTax =
         completedBills.fold<int>(0, (sum, b) => sum + b.taxAmount);
+    final totalCgst =
+        completedBills.fold<int>(0, (sum, b) => sum + b.cgstAmount);
+    final totalSgst =
+        completedBills.fold<int>(0, (sum, b) => sum + b.sgstAmount);
+    final totalIgst =
+        completedBills.fold<int>(0, (sum, b) => sum + b.igstAmount);
     final totalDiscount =
         completedBills.fold<int>(0, (sum, b) => sum + b.discountAmount);
 
@@ -113,6 +122,9 @@ class ReportRepositoryImpl implements ReportRepository {
       'Total Bills': completedBills.length,
       'Total Sales': '₹${(totalSales / 100).toStringAsFixed(2)}',
       'Total Tax': '₹${(totalTax / 100).toStringAsFixed(2)}',
+      'CGST': '₹${(totalCgst / 100).toStringAsFixed(2)}',
+      'SGST': '₹${(totalSgst / 100).toStringAsFixed(2)}',
+      'IGST': '₹${(totalIgst / 100).toStringAsFixed(2)}',
       'Total Discount': '₹${(totalDiscount / 100).toStringAsFixed(2)}',
       'Net Sales': '₹${((totalSales - totalDiscount) / 100).toStringAsFixed(2)}',
     };
@@ -628,19 +640,39 @@ class ReportRepositoryImpl implements ReportRepository {
     final completedBills =
         bills.where((b) => b.status == 'completed' && !b.isReturn).toList();
 
-    final totalTax =
-        completedBills.fold<int>(0, (sum, b) => sum + b.taxAmount);
-    final totalTaxable =
-        completedBills.fold<int>(0, (sum, b) => sum + b.subtotal);
+    final totalCgst = completedBills.fold<int>(0, (sum, b) => sum + b.cgstAmount);
+    final totalSgst = completedBills.fold<int>(0, (sum, b) => sum + b.sgstAmount);
+    final totalIgst = completedBills.fold<int>(0, (sum, b) => sum + b.igstAmount);
+    final totalTax = completedBills.fold<int>(0, (sum, b) => sum + b.taxAmount);
+    final totalTaxable = completedBills.fold<int>(0, (sum, b) => sum + b.subtotal);
 
-    final columns = ['Bill Number', 'Customer', 'Taxable Amount', 'Tax Amount', 'Total'];
+    final preMigrationCount = completedBills
+        .where((b) => b.taxRuleVersion == 'pre-migration')
+        .length;
+    final v1Count = completedBills
+        .where((b) => b.taxRuleVersion == 'v1')
+        .length;
+
+    final columns = [
+      'Bill Number',
+      'Customer',
+      'Taxable',
+      'CGST',
+      'SGST',
+      'IGST',
+      'Total Tax',
+      'Version',
+    ];
     final rows = completedBills
         .map((b) => {
               'Bill Number': b.billNumber,
               'Customer': b.customerName ?? 'Walk-in',
-              'Taxable Amount': '₹${(b.subtotal / 100).toStringAsFixed(2)}',
-              'Tax Amount': '₹${(b.taxAmount / 100).toStringAsFixed(2)}',
-              'Total': '₹${(b.totalAmount / 100).toStringAsFixed(2)}',
+              'Taxable': '₹${(b.subtotal / 100).toStringAsFixed(2)}',
+              'CGST': b.cgstAmount > 0 ? '₹${(b.cgstAmount / 100).toStringAsFixed(2)}' : '-',
+              'SGST': b.sgstAmount > 0 ? '₹${(b.sgstAmount / 100).toStringAsFixed(2)}' : '-',
+              'IGST': b.igstAmount > 0 ? '₹${(b.igstAmount / 100).toStringAsFixed(2)}' : '-',
+              'Total Tax': '₹${(b.taxAmount / 100).toStringAsFixed(2)}',
+              'Version': b.taxRuleVersion == 'pre-migration' ? 'PRE' : 'v1',
             })
         .toList();
 
@@ -653,8 +685,13 @@ class ReportRepositoryImpl implements ReportRepository {
       rows: rows,
       summary: {
         'Total Taxable Amount': '₹${(totalTaxable / 100).toStringAsFixed(2)}',
+        'Total CGST': '₹${(totalCgst / 100).toStringAsFixed(2)}',
+        'Total SGST': '₹${(totalSgst / 100).toStringAsFixed(2)}',
+        'Total IGST': '₹${(totalIgst / 100).toStringAsFixed(2)}',
         'Total Tax Collected': '₹${(totalTax / 100).toStringAsFixed(2)}',
         'Total Bills': completedBills.length,
+        'Pre-migration Bills': preMigrationCount,
+        'V1 Bills': v1Count,
       },
     );
   }
