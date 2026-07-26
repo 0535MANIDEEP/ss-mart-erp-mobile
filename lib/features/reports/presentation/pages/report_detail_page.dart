@@ -251,6 +251,8 @@ class ReportDetailPage extends StatelessWidget {
         return 'Supplier-wise';
       case ReportType.purchaseVsSales:
         return 'Purchase vs Sales';
+      case ReportType.hsnGstSummary:
+        return 'HSN-wise GST Summary';
     }
   }
 }

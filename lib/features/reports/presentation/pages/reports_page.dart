@@ -64,6 +64,7 @@ class ReportsPage extends StatelessWidget {
             reports: [
               ReportItem('Profit & Loss', 'Revenue vs expenses', ReportType.profitLoss),
               ReportItem('GST Report', 'Tax collected/paid', ReportType.gstReport),
+              ReportItem('HSN-wise GST Summary', 'HSN-wise tax breakdown for GSTR filing', ReportType.hsnGstSummary),
               ReportItem('Expense Report', 'Category-wise expenses', ReportType.expenseReport),
             ],
           ),

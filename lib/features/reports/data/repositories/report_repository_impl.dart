@@ -78,6 +78,8 @@ class ReportRepositoryImpl implements ReportRepository {
         return _supplierWiseReport(start, end);
       case ReportType.purchaseVsSales:
         return _purchaseVsSalesReport(start, end);
+      case ReportType.hsnGstSummary:
+        return _hsnGstSummaryReport(start, end);
     }
   }
 
@@ -972,6 +974,127 @@ class ReportRepositoryImpl implements ReportRepository {
         'Total Sales': '₹${(totalSales / 100).toStringAsFixed(2)}',
         'Total Purchases': '₹${(totalPurchases / 100).toStringAsFixed(2)}',
         'Margin': '$marginPercent%',
+      },
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // HSN-wise GST Summary
+  // ---------------------------------------------------------------------------
+
+  Future<ReportData> _hsnGstSummaryReport(
+      DateTime start, DateTime end) async {
+    final bills = await _dao.getBillsByDateRange(start, end);
+    final completedBills =
+        bills.where((b) => b.status == 'completed' && !b.isReturn).toList();
+    final allProducts = await _dao.getAllProducts();
+    final productMap = {for (final p in allProducts) p.id: p};
+
+    final hsnData = <String, Map<String, dynamic>>{};
+    for (final bill in completedBills) {
+      final items = await _dao.getBillItemsByBillId(bill.id);
+      for (final item in items) {
+        final product = productMap[item.productId];
+        final hsnCode = product?.hsnCode ?? 'UNKNOWN';
+        final taxRate = product?.taxRate ?? 0.0;
+        final key = '${hsnCode}_${taxRate}';
+
+        if (!hsnData.containsKey(key)) {
+          hsnData[key] = {
+            'HSN Code': hsnCode,
+            'Tax Rate': '${taxRate.toStringAsFixed(1)}%',
+            'Quantity': 0.0,
+            'Taxable Amount': 0,
+            'CGST': 0,
+            'SGST': 0,
+            'IGST': 0,
+            'Total Tax': 0,
+            'Total Amount': 0,
+            'Items': 0,
+          };
+        }
+        hsnData[key]!['Quantity'] =
+            (hsnData[key]!['Quantity'] as double) + item.quantity;
+        hsnData[key]!['Taxable Amount'] =
+            (hsnData[key]!['Taxable Amount'] as int) + item.totalAmount;
+        hsnData[key]!['CGST'] =
+            (hsnData[key]!['CGST'] as int) + item.cgstAmount;
+        hsnData[key]!['SGST'] =
+            (hsnData[key]!['SGST'] as int) + item.sgstAmount;
+        hsnData[key]!['IGST'] =
+            (hsnData[key]!['IGST'] as int) + item.igstAmount;
+        hsnData[key]!['Total Tax'] =
+            (hsnData[key]!['Total Tax'] as int) + item.taxAmount;
+        hsnData[key]!['Total Amount'] =
+            (hsnData[key]!['Total Amount'] as int) + item.totalAmount;
+        hsnData[key]!['Items'] = (hsnData[key]!['Items'] as int) + 1;
+      }
+    }
+
+    final sortedEntries = hsnData.entries.toList()
+      ..sort((a, b) => (a.value['HSN Code'] as String)
+          .compareTo(b.value['HSN Code'] as String));
+
+    final columns = [
+      'HSN Code',
+      'Tax Rate',
+      'Quantity',
+      'Taxable Amount',
+      'CGST',
+      'SGST',
+      'IGST',
+      'Total Tax',
+      'Total Amount',
+    ];
+    final rows = sortedEntries
+        .map((e) => {
+              'HSN Code': e.value['HSN Code'],
+              'Tax Rate': e.value['Tax Rate'],
+              'Quantity': (e.value['Quantity'] as double).toStringAsFixed(2),
+              'Taxable Amount':
+                  '₹${((e.value['Taxable Amount'] as int) / 100).toStringAsFixed(2)}',
+              'CGST':
+                  '₹${((e.value['CGST'] as int) / 100).toStringAsFixed(2)}',
+              'SGST':
+                  '₹${((e.value['SGST'] as int) / 100).toStringAsFixed(2)}',
+              'IGST':
+                  '₹${((e.value['IGST'] as int) / 100).toStringAsFixed(2)}',
+              'Total Tax':
+                  '₹${((e.value['Total Tax'] as int) / 100).toStringAsFixed(2)}',
+              'Total Amount':
+                  '₹${((e.value['Total Amount'] as int) / 100).toStringAsFixed(2)}',
+            })
+        .toList();
+
+    final totalTaxable = sortedEntries.fold<int>(
+        0, (sum, e) => sum + (e.value['Taxable Amount'] as int));
+    final totalCgst = sortedEntries.fold<int>(
+        0, (sum, e) => sum + (e.value['CGST'] as int));
+    final totalSgst = sortedEntries.fold<int>(
+        0, (sum, e) => sum + (e.value['SGST'] as int));
+    final totalIgst = sortedEntries.fold<int>(
+        0, (sum, e) => sum + (e.value['IGST'] as int));
+    final totalTax = sortedEntries.fold<int>(
+        0, (sum, e) => sum + (e.value['Total Tax'] as int));
+    final totalAmount = sortedEntries.fold<int>(
+        0, (sum, e) => sum + (e.value['Total Amount'] as int));
+
+    return ReportData(
+      type: ReportType.hsnGstSummary,
+      title: 'HSN-wise GST Summary',
+      description:
+          'HSN-wise tax breakdown from ${DateFormat('dd MMM yyyy').format(start)} to ${DateFormat('dd MMM yyyy').format(end)}',
+      generatedAt: DateTime.now(),
+      columns: columns,
+      rows: rows,
+      summary: {
+        'Total HSN Codes': sortedEntries.length,
+        'Taxable Amount': '₹${(totalTaxable / 100).toStringAsFixed(2)}',
+        'Total CGST': '₹${(totalCgst / 100).toStringAsFixed(2)}',
+        'Total SGST': '₹${(totalSgst / 100).toStringAsFixed(2)}',
+        'Total IGST': '₹${(totalIgst / 100).toStringAsFixed(2)}',
+        'Total Tax Collected': '₹${(totalTax / 100).toStringAsFixed(2)}',
+        'Grand Total': '₹${(totalAmount / 100).toStringAsFixed(2)}',
       },
     );
   }
