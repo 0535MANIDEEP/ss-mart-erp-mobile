@@ -50,6 +50,7 @@ import '../features/challans/presentation/pages/challan_form_page.dart';
 import '../features/challans/presentation/pages/challan_detail_page.dart';
 import '../features/accounting/presentation/pages/accounting_page.dart';
 import '../features/expenses/presentation/pages/expenses_page.dart';
+import '../features/payments/presentation/pages/payments_page.dart';
 import '../features/challans/domain/entities/delivery_challan.dart';
 import '../features/orders/presentation/pages/orders_page.dart';
 import '../features/orders/presentation/pages/order_detail_page.dart';
@@ -371,6 +372,11 @@ final GoRouter appRouter = GoRouter(
           path: '/expenses',
           name: 'expenses',
           builder: (context, state) => const ExpensesPage(),
+        ),
+        GoRoute(
+          path: '/payments',
+          name: 'payments',
+          builder: (context, state) => const PaymentsPage(),
         ),
         GoRoute(
           path: '/orders',

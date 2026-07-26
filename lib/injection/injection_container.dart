@@ -19,6 +19,7 @@ import 'feature_challans.dart';
 import 'feature_accounting.dart';
 import 'feature_labels.dart';
 import 'feature_expenses.dart';
+import 'feature_payments.dart';
 
 /// Dependency Injection container for the SS MART ERP application.
 ///
@@ -70,4 +71,5 @@ Future<void> init() async {
   registerAccountingFeature(sl);
   registerOrdersFeature(sl);
   registerExpensesFeature(sl);
+  registerPaymentsFeature(sl);
 }

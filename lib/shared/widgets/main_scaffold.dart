@@ -154,6 +154,14 @@ class MainScaffold extends StatelessWidget {
                 },
               ),
               ListTile(
+                leading: const Icon(Icons.payment),
+                title: const Text('Payments'),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.go('/payments');
+                },
+              ),
+              ListTile(
                 leading: const Icon(Icons.receipt_long),
                 title: const Text('Orders'),
                 onTap: () {
