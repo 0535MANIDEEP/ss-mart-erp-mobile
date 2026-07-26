@@ -18,6 +18,6 @@ void registerReportsFeature(GetIt sl) {
   sl.registerLazySingleton(() => GetReportUseCase(sl()));
   sl.registerLazySingleton(() => ExportReportUseCase(sl()));
   sl.registerLazySingleton<ReportRepository>(
-    () => ReportRepositoryImpl(dao: sl()),
+    () => ReportRepositoryImpl(dao: sl(), expenseRepository: sl()),
   );
 }

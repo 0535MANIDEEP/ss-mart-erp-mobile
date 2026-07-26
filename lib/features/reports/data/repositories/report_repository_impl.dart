@@ -10,11 +10,16 @@ import '../../../../core/error/failures.dart';
 import '../../../../database/app_database.dart' as db;
 import '../../domain/entities/report_entity.dart';
 import '../../domain/repositories/report_repository.dart';
+import '../../../expenses/data/repositories/expense_repository_impl.dart';
+import '../../../expenses/domain/entities/expense.dart';
 
 class ReportRepositoryImpl implements ReportRepository {
   final db.DatabaseDao _dao;
+  final ExpenseRepositoryImpl? _expenseRepository;
 
-  ReportRepositoryImpl({required db.DatabaseDao dao}) : _dao = dao;
+  ReportRepositoryImpl({required db.DatabaseDao dao, ExpenseRepositoryImpl? expenseRepository})
+      : _dao = dao,
+        _expenseRepository = expenseRepository;
 
   @override
   Future<Either<Failure, ReportData>> getReport(
@@ -699,15 +704,58 @@ class ReportRepositoryImpl implements ReportRepository {
   }
 
   Future<ReportData> _expenseReport() async {
-    final columns = ['Category', 'Amount', 'Notes'];
+    final now = DateTime.now();
+    final start = DateTime(now.year, now.month, 1);
+    final end = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+
+    List<Expense> expenses = [];
+    List categories = [];
+
+    if (_expenseRepository != null) {
+      final expResult = await _expenseRepository!.getExpenses(
+        startDate: start,
+        endDate: end,
+      );
+      expResult.fold((l) {}, (r) => expenses = r);
+      final catResult = await _expenseRepository!.getExpenseCategories();
+      catResult.fold((l) {}, (r) => categories = r);
+    }
+
+    final columns = ['Date', 'Category', 'Description', 'Payee', 'Payment', 'Amount'];
+
+    final rows = expenses.map((e) {
+      final cat = categories.where((c) => c.id == e.expenseCategoryId);
+      return {
+        'Date': DateFormat('dd MMM yyyy').format(e.expenseDate),
+        'Category': cat.isNotEmpty ? cat.first.name : 'Uncategorized',
+        'Description': e.description ?? '-',
+        'Payee': e.payee ?? '-',
+        'Payment': e.paymentMode,
+        'Amount': e.formattedAmount,
+      };
+    }).toList();
+
+    final totalAmount = expenses.fold<int>(0, (sum, e) => sum + e.amount);
+
+    final byCategory = <String, int>{};
+    for (final e in expenses) {
+      final catName = categories.where((c) => c.id == e.expenseCategoryId);
+      final name = catName.isNotEmpty ? catName.first.name : 'Uncategorized';
+      byCategory[name] = (byCategory[name] ?? 0) + e.amount;
+    }
+
     return ReportData(
       type: ReportType.expenseReport,
       title: 'Expense Report',
-      description: 'Expense tracking (module under development)',
+      description: 'Expenses for ${DateFormat('MMMM yyyy').format(now)}',
       generatedAt: DateTime.now(),
       columns: columns,
-      rows: const [],
-      summary: const {'Message': 'Expense tracking module is under development. Data will appear here once implemented.'},
+      rows: rows,
+      summary: {
+        'Total Expenses': '₹${(totalAmount / 100).toStringAsFixed(2)}',
+        'Total Records': expenses.length,
+        ...byCategory.map((k, v) => MapEntry(k, '₹${(v / 100).toStringAsFixed(2)}')),
+      },
     );
   }
 

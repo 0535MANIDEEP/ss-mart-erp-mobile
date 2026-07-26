@@ -27891,6 +27891,1416 @@ class PurchaseOrderItemsCompanion extends UpdateCompanion<PurchaseOrderItem> {
   }
 }
 
+class $ExpenseCategoriesTable extends ExpenseCategories
+    with TableInfo<$ExpenseCategoriesTable, ExpenseCategory> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ExpenseCategoriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _colorMeta = const VerificationMeta('color');
+  @override
+  late final GeneratedColumn<String> color = GeneratedColumn<String>(
+      'color', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _iconMeta = const VerificationMeta('icon');
+  @override
+  late final GeneratedColumn<String> icon = GeneratedColumn<String>(
+      'icon', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _sortOrderMeta =
+      const VerificationMeta('sortOrder');
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+      'sort_order', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _isActiveMeta =
+      const VerificationMeta('isActive');
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+      'is_active', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_active" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _versionMeta =
+      const VerificationMeta('version');
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+      'version', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(1));
+  static const VerificationMeta _syncStatusMeta =
+      const VerificationMeta('syncStatus');
+  @override
+  late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
+      'sync_status', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('pending'));
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        name,
+        description,
+        color,
+        icon,
+        sortOrder,
+        isActive,
+        createdAt,
+        updatedAt,
+        version,
+        syncStatus
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'expense_categories';
+  @override
+  VerificationContext validateIntegrity(Insertable<ExpenseCategory> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    }
+    if (data.containsKey('color')) {
+      context.handle(
+          _colorMeta, color.isAcceptableOrUnknown(data['color']!, _colorMeta));
+    }
+    if (data.containsKey('icon')) {
+      context.handle(
+          _iconMeta, icon.isAcceptableOrUnknown(data['icon']!, _iconMeta));
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(_sortOrderMeta,
+          sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta));
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(_isActiveMeta,
+          isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(_versionMeta,
+          version.isAcceptableOrUnknown(data['version']!, _versionMeta));
+    }
+    if (data.containsKey('sync_status')) {
+      context.handle(
+          _syncStatusMeta,
+          syncStatus.isAcceptableOrUnknown(
+              data['sync_status']!, _syncStatusMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ExpenseCategory map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ExpenseCategory(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description']),
+      color: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}color']),
+      icon: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}icon']),
+      sortOrder: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}sort_order'])!,
+      isActive: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_active'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      version: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}version'])!,
+      syncStatus: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}sync_status'])!,
+    );
+  }
+
+  @override
+  $ExpenseCategoriesTable createAlias(String alias) {
+    return $ExpenseCategoriesTable(attachedDatabase, alias);
+  }
+}
+
+class ExpenseCategory extends DataClass implements Insertable<ExpenseCategory> {
+  final String id;
+  final String name;
+  final String? description;
+  final String? color;
+  final String? icon;
+  final int sortOrder;
+  final bool isActive;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final int version;
+  final String syncStatus;
+  const ExpenseCategory(
+      {required this.id,
+      required this.name,
+      this.description,
+      this.color,
+      this.icon,
+      required this.sortOrder,
+      required this.isActive,
+      required this.createdAt,
+      required this.updatedAt,
+      required this.version,
+      required this.syncStatus});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    if (!nullToAbsent || color != null) {
+      map['color'] = Variable<String>(color);
+    }
+    if (!nullToAbsent || icon != null) {
+      map['icon'] = Variable<String>(icon);
+    }
+    map['sort_order'] = Variable<int>(sortOrder);
+    map['is_active'] = Variable<bool>(isActive);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['version'] = Variable<int>(version);
+    map['sync_status'] = Variable<String>(syncStatus);
+    return map;
+  }
+
+  ExpenseCategoriesCompanion toCompanion(bool nullToAbsent) {
+    return ExpenseCategoriesCompanion(
+      id: Value(id),
+      name: Value(name),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      color:
+          color == null && nullToAbsent ? const Value.absent() : Value(color),
+      icon: icon == null && nullToAbsent ? const Value.absent() : Value(icon),
+      sortOrder: Value(sortOrder),
+      isActive: Value(isActive),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      version: Value(version),
+      syncStatus: Value(syncStatus),
+    );
+  }
+
+  factory ExpenseCategory.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ExpenseCategory(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      description: serializer.fromJson<String?>(json['description']),
+      color: serializer.fromJson<String?>(json['color']),
+      icon: serializer.fromJson<String?>(json['icon']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      version: serializer.fromJson<int>(json['version']),
+      syncStatus: serializer.fromJson<String>(json['syncStatus']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'description': serializer.toJson<String?>(description),
+      'color': serializer.toJson<String?>(color),
+      'icon': serializer.toJson<String?>(icon),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'version': serializer.toJson<int>(version),
+      'syncStatus': serializer.toJson<String>(syncStatus),
+    };
+  }
+
+  ExpenseCategory copyWith(
+          {String? id,
+          String? name,
+          Value<String?> description = const Value.absent(),
+          Value<String?> color = const Value.absent(),
+          Value<String?> icon = const Value.absent(),
+          int? sortOrder,
+          bool? isActive,
+          DateTime? createdAt,
+          DateTime? updatedAt,
+          int? version,
+          String? syncStatus}) =>
+      ExpenseCategory(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        description: description.present ? description.value : this.description,
+        color: color.present ? color.value : this.color,
+        icon: icon.present ? icon.value : this.icon,
+        sortOrder: sortOrder ?? this.sortOrder,
+        isActive: isActive ?? this.isActive,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        version: version ?? this.version,
+        syncStatus: syncStatus ?? this.syncStatus,
+      );
+  ExpenseCategory copyWithCompanion(ExpenseCategoriesCompanion data) {
+    return ExpenseCategory(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      description:
+          data.description.present ? data.description.value : this.description,
+      color: data.color.present ? data.color.value : this.color,
+      icon: data.icon.present ? data.icon.value : this.icon,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      version: data.version.present ? data.version.value : this.version,
+      syncStatus:
+          data.syncStatus.present ? data.syncStatus.value : this.syncStatus,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExpenseCategory(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('color: $color, ')
+          ..write('icon: $icon, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('version: $version, ')
+          ..write('syncStatus: $syncStatus')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, description, color, icon, sortOrder,
+      isActive, createdAt, updatedAt, version, syncStatus);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ExpenseCategory &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.description == this.description &&
+          other.color == this.color &&
+          other.icon == this.icon &&
+          other.sortOrder == this.sortOrder &&
+          other.isActive == this.isActive &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.version == this.version &&
+          other.syncStatus == this.syncStatus);
+}
+
+class ExpenseCategoriesCompanion extends UpdateCompanion<ExpenseCategory> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String?> description;
+  final Value<String?> color;
+  final Value<String?> icon;
+  final Value<int> sortOrder;
+  final Value<bool> isActive;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> version;
+  final Value<String> syncStatus;
+  final Value<int> rowid;
+  const ExpenseCategoriesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.description = const Value.absent(),
+    this.color = const Value.absent(),
+    this.icon = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.version = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ExpenseCategoriesCompanion.insert({
+    required String id,
+    required String name,
+    this.description = const Value.absent(),
+    this.color = const Value.absent(),
+    this.icon = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.isActive = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.version = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        name = Value(name),
+        createdAt = Value(createdAt),
+        updatedAt = Value(updatedAt);
+  static Insertable<ExpenseCategory> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? description,
+    Expression<String>? color,
+    Expression<String>? icon,
+    Expression<int>? sortOrder,
+    Expression<bool>? isActive,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? version,
+    Expression<String>? syncStatus,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+      if (color != null) 'color': color,
+      if (icon != null) 'icon': icon,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (isActive != null) 'is_active': isActive,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (version != null) 'version': version,
+      if (syncStatus != null) 'sync_status': syncStatus,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ExpenseCategoriesCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? name,
+      Value<String?>? description,
+      Value<String?>? color,
+      Value<String?>? icon,
+      Value<int>? sortOrder,
+      Value<bool>? isActive,
+      Value<DateTime>? createdAt,
+      Value<DateTime>? updatedAt,
+      Value<int>? version,
+      Value<String>? syncStatus,
+      Value<int>? rowid}) {
+    return ExpenseCategoriesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      color: color ?? this.color,
+      icon: icon ?? this.icon,
+      sortOrder: sortOrder ?? this.sortOrder,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      version: version ?? this.version,
+      syncStatus: syncStatus ?? this.syncStatus,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (color.present) {
+      map['color'] = Variable<String>(color.value);
+    }
+    if (icon.present) {
+      map['icon'] = Variable<String>(icon.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (syncStatus.present) {
+      map['sync_status'] = Variable<String>(syncStatus.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExpenseCategoriesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('color: $color, ')
+          ..write('icon: $icon, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('version: $version, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ExpensesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _expenseNumberMeta =
+      const VerificationMeta('expenseNumber');
+  @override
+  late final GeneratedColumn<String> expenseNumber = GeneratedColumn<String>(
+      'expense_number', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _expenseCategoryIdMeta =
+      const VerificationMeta('expenseCategoryId');
+  @override
+  late final GeneratedColumn<String> expenseCategoryId =
+      GeneratedColumn<String>('expense_category_id', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _expenseDateMeta =
+      const VerificationMeta('expenseDate');
+  @override
+  late final GeneratedColumn<DateTime> expenseDate = GeneratedColumn<DateTime>(
+      'expense_date', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
+  @override
+  late final GeneratedColumn<int> amount = GeneratedColumn<int>(
+      'amount', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _paymentModeMeta =
+      const VerificationMeta('paymentMode');
+  @override
+  late final GeneratedColumn<String> paymentMode = GeneratedColumn<String>(
+      'payment_mode', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('CASH'));
+  static const VerificationMeta _payeeMeta = const VerificationMeta('payee');
+  @override
+  late final GeneratedColumn<String> payee = GeneratedColumn<String>(
+      'payee', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _referenceTypeMeta =
+      const VerificationMeta('referenceType');
+  @override
+  late final GeneratedColumn<String> referenceType = GeneratedColumn<String>(
+      'reference_type', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _referenceIdMeta =
+      const VerificationMeta('referenceId');
+  @override
+  late final GeneratedColumn<String> referenceId = GeneratedColumn<String>(
+      'reference_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _isRecurringMeta =
+      const VerificationMeta('isRecurring');
+  @override
+  late final GeneratedColumn<bool> isRecurring = GeneratedColumn<bool>(
+      'is_recurring', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("is_recurring" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  static const VerificationMeta _recurringFrequencyMeta =
+      const VerificationMeta('recurringFrequency');
+  @override
+  late final GeneratedColumn<String> recurringFrequency =
+      GeneratedColumn<String>('recurring_frequency', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+      'status', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('completed'));
+  static const VerificationMeta _createdByMeta =
+      const VerificationMeta('createdBy');
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+      'created_by', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _versionMeta =
+      const VerificationMeta('version');
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+      'version', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(1));
+  static const VerificationMeta _syncStatusMeta =
+      const VerificationMeta('syncStatus');
+  @override
+  late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
+      'sync_status', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('pending'));
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        expenseNumber,
+        expenseCategoryId,
+        expenseDate,
+        amount,
+        paymentMode,
+        payee,
+        description,
+        referenceType,
+        referenceId,
+        isRecurring,
+        recurringFrequency,
+        status,
+        createdBy,
+        createdAt,
+        updatedAt,
+        version,
+        syncStatus
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'expenses';
+  @override
+  VerificationContext validateIntegrity(Insertable<Expense> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('expense_number')) {
+      context.handle(
+          _expenseNumberMeta,
+          expenseNumber.isAcceptableOrUnknown(
+              data['expense_number']!, _expenseNumberMeta));
+    } else if (isInserting) {
+      context.missing(_expenseNumberMeta);
+    }
+    if (data.containsKey('expense_category_id')) {
+      context.handle(
+          _expenseCategoryIdMeta,
+          expenseCategoryId.isAcceptableOrUnknown(
+              data['expense_category_id']!, _expenseCategoryIdMeta));
+    }
+    if (data.containsKey('expense_date')) {
+      context.handle(
+          _expenseDateMeta,
+          expenseDate.isAcceptableOrUnknown(
+              data['expense_date']!, _expenseDateMeta));
+    } else if (isInserting) {
+      context.missing(_expenseDateMeta);
+    }
+    if (data.containsKey('amount')) {
+      context.handle(_amountMeta,
+          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
+    } else if (isInserting) {
+      context.missing(_amountMeta);
+    }
+    if (data.containsKey('payment_mode')) {
+      context.handle(
+          _paymentModeMeta,
+          paymentMode.isAcceptableOrUnknown(
+              data['payment_mode']!, _paymentModeMeta));
+    }
+    if (data.containsKey('payee')) {
+      context.handle(
+          _payeeMeta, payee.isAcceptableOrUnknown(data['payee']!, _payeeMeta));
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    }
+    if (data.containsKey('reference_type')) {
+      context.handle(
+          _referenceTypeMeta,
+          referenceType.isAcceptableOrUnknown(
+              data['reference_type']!, _referenceTypeMeta));
+    }
+    if (data.containsKey('reference_id')) {
+      context.handle(
+          _referenceIdMeta,
+          referenceId.isAcceptableOrUnknown(
+              data['reference_id']!, _referenceIdMeta));
+    }
+    if (data.containsKey('is_recurring')) {
+      context.handle(
+          _isRecurringMeta,
+          isRecurring.isAcceptableOrUnknown(
+              data['is_recurring']!, _isRecurringMeta));
+    }
+    if (data.containsKey('recurring_frequency')) {
+      context.handle(
+          _recurringFrequencyMeta,
+          recurringFrequency.isAcceptableOrUnknown(
+              data['recurring_frequency']!, _recurringFrequencyMeta));
+    }
+    if (data.containsKey('status')) {
+      context.handle(_statusMeta,
+          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(_createdByMeta,
+          createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(_versionMeta,
+          version.isAcceptableOrUnknown(data['version']!, _versionMeta));
+    }
+    if (data.containsKey('sync_status')) {
+      context.handle(
+          _syncStatusMeta,
+          syncStatus.isAcceptableOrUnknown(
+              data['sync_status']!, _syncStatusMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Expense map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Expense(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      expenseNumber: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}expense_number'])!,
+      expenseCategoryId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}expense_category_id']),
+      expenseDate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}expense_date'])!,
+      amount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}amount'])!,
+      paymentMode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}payment_mode'])!,
+      payee: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}payee']),
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description']),
+      referenceType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}reference_type']),
+      referenceId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}reference_id']),
+      isRecurring: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_recurring'])!,
+      recurringFrequency: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}recurring_frequency']),
+      status: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
+      createdBy: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}created_by']),
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      version: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}version'])!,
+      syncStatus: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}sync_status'])!,
+    );
+  }
+
+  @override
+  $ExpensesTable createAlias(String alias) {
+    return $ExpensesTable(attachedDatabase, alias);
+  }
+}
+
+class Expense extends DataClass implements Insertable<Expense> {
+  final String id;
+  final String expenseNumber;
+  final String? expenseCategoryId;
+  final DateTime expenseDate;
+  final int amount;
+  final String paymentMode;
+  final String? payee;
+  final String? description;
+  final String? referenceType;
+  final String? referenceId;
+  final bool isRecurring;
+  final String? recurringFrequency;
+  final String status;
+  final String? createdBy;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final int version;
+  final String syncStatus;
+  const Expense(
+      {required this.id,
+      required this.expenseNumber,
+      this.expenseCategoryId,
+      required this.expenseDate,
+      required this.amount,
+      required this.paymentMode,
+      this.payee,
+      this.description,
+      this.referenceType,
+      this.referenceId,
+      required this.isRecurring,
+      this.recurringFrequency,
+      required this.status,
+      this.createdBy,
+      required this.createdAt,
+      required this.updatedAt,
+      required this.version,
+      required this.syncStatus});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['expense_number'] = Variable<String>(expenseNumber);
+    if (!nullToAbsent || expenseCategoryId != null) {
+      map['expense_category_id'] = Variable<String>(expenseCategoryId);
+    }
+    map['expense_date'] = Variable<DateTime>(expenseDate);
+    map['amount'] = Variable<int>(amount);
+    map['payment_mode'] = Variable<String>(paymentMode);
+    if (!nullToAbsent || payee != null) {
+      map['payee'] = Variable<String>(payee);
+    }
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    if (!nullToAbsent || referenceType != null) {
+      map['reference_type'] = Variable<String>(referenceType);
+    }
+    if (!nullToAbsent || referenceId != null) {
+      map['reference_id'] = Variable<String>(referenceId);
+    }
+    map['is_recurring'] = Variable<bool>(isRecurring);
+    if (!nullToAbsent || recurringFrequency != null) {
+      map['recurring_frequency'] = Variable<String>(recurringFrequency);
+    }
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || createdBy != null) {
+      map['created_by'] = Variable<String>(createdBy);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['version'] = Variable<int>(version);
+    map['sync_status'] = Variable<String>(syncStatus);
+    return map;
+  }
+
+  ExpensesCompanion toCompanion(bool nullToAbsent) {
+    return ExpensesCompanion(
+      id: Value(id),
+      expenseNumber: Value(expenseNumber),
+      expenseCategoryId: expenseCategoryId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(expenseCategoryId),
+      expenseDate: Value(expenseDate),
+      amount: Value(amount),
+      paymentMode: Value(paymentMode),
+      payee:
+          payee == null && nullToAbsent ? const Value.absent() : Value(payee),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      referenceType: referenceType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(referenceType),
+      referenceId: referenceId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(referenceId),
+      isRecurring: Value(isRecurring),
+      recurringFrequency: recurringFrequency == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recurringFrequency),
+      status: Value(status),
+      createdBy: createdBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(createdBy),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      version: Value(version),
+      syncStatus: Value(syncStatus),
+    );
+  }
+
+  factory Expense.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Expense(
+      id: serializer.fromJson<String>(json['id']),
+      expenseNumber: serializer.fromJson<String>(json['expenseNumber']),
+      expenseCategoryId:
+          serializer.fromJson<String?>(json['expenseCategoryId']),
+      expenseDate: serializer.fromJson<DateTime>(json['expenseDate']),
+      amount: serializer.fromJson<int>(json['amount']),
+      paymentMode: serializer.fromJson<String>(json['paymentMode']),
+      payee: serializer.fromJson<String?>(json['payee']),
+      description: serializer.fromJson<String?>(json['description']),
+      referenceType: serializer.fromJson<String?>(json['referenceType']),
+      referenceId: serializer.fromJson<String?>(json['referenceId']),
+      isRecurring: serializer.fromJson<bool>(json['isRecurring']),
+      recurringFrequency:
+          serializer.fromJson<String?>(json['recurringFrequency']),
+      status: serializer.fromJson<String>(json['status']),
+      createdBy: serializer.fromJson<String?>(json['createdBy']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      version: serializer.fromJson<int>(json['version']),
+      syncStatus: serializer.fromJson<String>(json['syncStatus']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'expenseNumber': serializer.toJson<String>(expenseNumber),
+      'expenseCategoryId': serializer.toJson<String?>(expenseCategoryId),
+      'expenseDate': serializer.toJson<DateTime>(expenseDate),
+      'amount': serializer.toJson<int>(amount),
+      'paymentMode': serializer.toJson<String>(paymentMode),
+      'payee': serializer.toJson<String?>(payee),
+      'description': serializer.toJson<String?>(description),
+      'referenceType': serializer.toJson<String?>(referenceType),
+      'referenceId': serializer.toJson<String?>(referenceId),
+      'isRecurring': serializer.toJson<bool>(isRecurring),
+      'recurringFrequency': serializer.toJson<String?>(recurringFrequency),
+      'status': serializer.toJson<String>(status),
+      'createdBy': serializer.toJson<String?>(createdBy),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'version': serializer.toJson<int>(version),
+      'syncStatus': serializer.toJson<String>(syncStatus),
+    };
+  }
+
+  Expense copyWith(
+          {String? id,
+          String? expenseNumber,
+          Value<String?> expenseCategoryId = const Value.absent(),
+          DateTime? expenseDate,
+          int? amount,
+          String? paymentMode,
+          Value<String?> payee = const Value.absent(),
+          Value<String?> description = const Value.absent(),
+          Value<String?> referenceType = const Value.absent(),
+          Value<String?> referenceId = const Value.absent(),
+          bool? isRecurring,
+          Value<String?> recurringFrequency = const Value.absent(),
+          String? status,
+          Value<String?> createdBy = const Value.absent(),
+          DateTime? createdAt,
+          DateTime? updatedAt,
+          int? version,
+          String? syncStatus}) =>
+      Expense(
+        id: id ?? this.id,
+        expenseNumber: expenseNumber ?? this.expenseNumber,
+        expenseCategoryId: expenseCategoryId.present
+            ? expenseCategoryId.value
+            : this.expenseCategoryId,
+        expenseDate: expenseDate ?? this.expenseDate,
+        amount: amount ?? this.amount,
+        paymentMode: paymentMode ?? this.paymentMode,
+        payee: payee.present ? payee.value : this.payee,
+        description: description.present ? description.value : this.description,
+        referenceType:
+            referenceType.present ? referenceType.value : this.referenceType,
+        referenceId: referenceId.present ? referenceId.value : this.referenceId,
+        isRecurring: isRecurring ?? this.isRecurring,
+        recurringFrequency: recurringFrequency.present
+            ? recurringFrequency.value
+            : this.recurringFrequency,
+        status: status ?? this.status,
+        createdBy: createdBy.present ? createdBy.value : this.createdBy,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        version: version ?? this.version,
+        syncStatus: syncStatus ?? this.syncStatus,
+      );
+  Expense copyWithCompanion(ExpensesCompanion data) {
+    return Expense(
+      id: data.id.present ? data.id.value : this.id,
+      expenseNumber: data.expenseNumber.present
+          ? data.expenseNumber.value
+          : this.expenseNumber,
+      expenseCategoryId: data.expenseCategoryId.present
+          ? data.expenseCategoryId.value
+          : this.expenseCategoryId,
+      expenseDate:
+          data.expenseDate.present ? data.expenseDate.value : this.expenseDate,
+      amount: data.amount.present ? data.amount.value : this.amount,
+      paymentMode:
+          data.paymentMode.present ? data.paymentMode.value : this.paymentMode,
+      payee: data.payee.present ? data.payee.value : this.payee,
+      description:
+          data.description.present ? data.description.value : this.description,
+      referenceType: data.referenceType.present
+          ? data.referenceType.value
+          : this.referenceType,
+      referenceId:
+          data.referenceId.present ? data.referenceId.value : this.referenceId,
+      isRecurring:
+          data.isRecurring.present ? data.isRecurring.value : this.isRecurring,
+      recurringFrequency: data.recurringFrequency.present
+          ? data.recurringFrequency.value
+          : this.recurringFrequency,
+      status: data.status.present ? data.status.value : this.status,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      version: data.version.present ? data.version.value : this.version,
+      syncStatus:
+          data.syncStatus.present ? data.syncStatus.value : this.syncStatus,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Expense(')
+          ..write('id: $id, ')
+          ..write('expenseNumber: $expenseNumber, ')
+          ..write('expenseCategoryId: $expenseCategoryId, ')
+          ..write('expenseDate: $expenseDate, ')
+          ..write('amount: $amount, ')
+          ..write('paymentMode: $paymentMode, ')
+          ..write('payee: $payee, ')
+          ..write('description: $description, ')
+          ..write('referenceType: $referenceType, ')
+          ..write('referenceId: $referenceId, ')
+          ..write('isRecurring: $isRecurring, ')
+          ..write('recurringFrequency: $recurringFrequency, ')
+          ..write('status: $status, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('version: $version, ')
+          ..write('syncStatus: $syncStatus')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id,
+      expenseNumber,
+      expenseCategoryId,
+      expenseDate,
+      amount,
+      paymentMode,
+      payee,
+      description,
+      referenceType,
+      referenceId,
+      isRecurring,
+      recurringFrequency,
+      status,
+      createdBy,
+      createdAt,
+      updatedAt,
+      version,
+      syncStatus);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Expense &&
+          other.id == this.id &&
+          other.expenseNumber == this.expenseNumber &&
+          other.expenseCategoryId == this.expenseCategoryId &&
+          other.expenseDate == this.expenseDate &&
+          other.amount == this.amount &&
+          other.paymentMode == this.paymentMode &&
+          other.payee == this.payee &&
+          other.description == this.description &&
+          other.referenceType == this.referenceType &&
+          other.referenceId == this.referenceId &&
+          other.isRecurring == this.isRecurring &&
+          other.recurringFrequency == this.recurringFrequency &&
+          other.status == this.status &&
+          other.createdBy == this.createdBy &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.version == this.version &&
+          other.syncStatus == this.syncStatus);
+}
+
+class ExpensesCompanion extends UpdateCompanion<Expense> {
+  final Value<String> id;
+  final Value<String> expenseNumber;
+  final Value<String?> expenseCategoryId;
+  final Value<DateTime> expenseDate;
+  final Value<int> amount;
+  final Value<String> paymentMode;
+  final Value<String?> payee;
+  final Value<String?> description;
+  final Value<String?> referenceType;
+  final Value<String?> referenceId;
+  final Value<bool> isRecurring;
+  final Value<String?> recurringFrequency;
+  final Value<String> status;
+  final Value<String?> createdBy;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> version;
+  final Value<String> syncStatus;
+  final Value<int> rowid;
+  const ExpensesCompanion({
+    this.id = const Value.absent(),
+    this.expenseNumber = const Value.absent(),
+    this.expenseCategoryId = const Value.absent(),
+    this.expenseDate = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.paymentMode = const Value.absent(),
+    this.payee = const Value.absent(),
+    this.description = const Value.absent(),
+    this.referenceType = const Value.absent(),
+    this.referenceId = const Value.absent(),
+    this.isRecurring = const Value.absent(),
+    this.recurringFrequency = const Value.absent(),
+    this.status = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.version = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ExpensesCompanion.insert({
+    required String id,
+    required String expenseNumber,
+    this.expenseCategoryId = const Value.absent(),
+    required DateTime expenseDate,
+    required int amount,
+    this.paymentMode = const Value.absent(),
+    this.payee = const Value.absent(),
+    this.description = const Value.absent(),
+    this.referenceType = const Value.absent(),
+    this.referenceId = const Value.absent(),
+    this.isRecurring = const Value.absent(),
+    this.recurringFrequency = const Value.absent(),
+    this.status = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.version = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        expenseNumber = Value(expenseNumber),
+        expenseDate = Value(expenseDate),
+        amount = Value(amount),
+        createdAt = Value(createdAt),
+        updatedAt = Value(updatedAt);
+  static Insertable<Expense> custom({
+    Expression<String>? id,
+    Expression<String>? expenseNumber,
+    Expression<String>? expenseCategoryId,
+    Expression<DateTime>? expenseDate,
+    Expression<int>? amount,
+    Expression<String>? paymentMode,
+    Expression<String>? payee,
+    Expression<String>? description,
+    Expression<String>? referenceType,
+    Expression<String>? referenceId,
+    Expression<bool>? isRecurring,
+    Expression<String>? recurringFrequency,
+    Expression<String>? status,
+    Expression<String>? createdBy,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? version,
+    Expression<String>? syncStatus,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (expenseNumber != null) 'expense_number': expenseNumber,
+      if (expenseCategoryId != null) 'expense_category_id': expenseCategoryId,
+      if (expenseDate != null) 'expense_date': expenseDate,
+      if (amount != null) 'amount': amount,
+      if (paymentMode != null) 'payment_mode': paymentMode,
+      if (payee != null) 'payee': payee,
+      if (description != null) 'description': description,
+      if (referenceType != null) 'reference_type': referenceType,
+      if (referenceId != null) 'reference_id': referenceId,
+      if (isRecurring != null) 'is_recurring': isRecurring,
+      if (recurringFrequency != null) 'recurring_frequency': recurringFrequency,
+      if (status != null) 'status': status,
+      if (createdBy != null) 'created_by': createdBy,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (version != null) 'version': version,
+      if (syncStatus != null) 'sync_status': syncStatus,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ExpensesCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? expenseNumber,
+      Value<String?>? expenseCategoryId,
+      Value<DateTime>? expenseDate,
+      Value<int>? amount,
+      Value<String>? paymentMode,
+      Value<String?>? payee,
+      Value<String?>? description,
+      Value<String?>? referenceType,
+      Value<String?>? referenceId,
+      Value<bool>? isRecurring,
+      Value<String?>? recurringFrequency,
+      Value<String>? status,
+      Value<String?>? createdBy,
+      Value<DateTime>? createdAt,
+      Value<DateTime>? updatedAt,
+      Value<int>? version,
+      Value<String>? syncStatus,
+      Value<int>? rowid}) {
+    return ExpensesCompanion(
+      id: id ?? this.id,
+      expenseNumber: expenseNumber ?? this.expenseNumber,
+      expenseCategoryId: expenseCategoryId ?? this.expenseCategoryId,
+      expenseDate: expenseDate ?? this.expenseDate,
+      amount: amount ?? this.amount,
+      paymentMode: paymentMode ?? this.paymentMode,
+      payee: payee ?? this.payee,
+      description: description ?? this.description,
+      referenceType: referenceType ?? this.referenceType,
+      referenceId: referenceId ?? this.referenceId,
+      isRecurring: isRecurring ?? this.isRecurring,
+      recurringFrequency: recurringFrequency ?? this.recurringFrequency,
+      status: status ?? this.status,
+      createdBy: createdBy ?? this.createdBy,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      version: version ?? this.version,
+      syncStatus: syncStatus ?? this.syncStatus,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (expenseNumber.present) {
+      map['expense_number'] = Variable<String>(expenseNumber.value);
+    }
+    if (expenseCategoryId.present) {
+      map['expense_category_id'] = Variable<String>(expenseCategoryId.value);
+    }
+    if (expenseDate.present) {
+      map['expense_date'] = Variable<DateTime>(expenseDate.value);
+    }
+    if (amount.present) {
+      map['amount'] = Variable<int>(amount.value);
+    }
+    if (paymentMode.present) {
+      map['payment_mode'] = Variable<String>(paymentMode.value);
+    }
+    if (payee.present) {
+      map['payee'] = Variable<String>(payee.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (referenceType.present) {
+      map['reference_type'] = Variable<String>(referenceType.value);
+    }
+    if (referenceId.present) {
+      map['reference_id'] = Variable<String>(referenceId.value);
+    }
+    if (isRecurring.present) {
+      map['is_recurring'] = Variable<bool>(isRecurring.value);
+    }
+    if (recurringFrequency.present) {
+      map['recurring_frequency'] = Variable<String>(recurringFrequency.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (syncStatus.present) {
+      map['sync_status'] = Variable<String>(syncStatus.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExpensesCompanion(')
+          ..write('id: $id, ')
+          ..write('expenseNumber: $expenseNumber, ')
+          ..write('expenseCategoryId: $expenseCategoryId, ')
+          ..write('expenseDate: $expenseDate, ')
+          ..write('amount: $amount, ')
+          ..write('paymentMode: $paymentMode, ')
+          ..write('payee: $payee, ')
+          ..write('description: $description, ')
+          ..write('referenceType: $referenceType, ')
+          ..write('referenceId: $referenceId, ')
+          ..write('isRecurring: $isRecurring, ')
+          ..write('recurringFrequency: $recurringFrequency, ')
+          ..write('status: $status, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('version: $version, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -27955,6 +29365,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $SalesOrderItemsTable(this);
   late final $PurchaseOrderItemsTable purchaseOrderItems =
       $PurchaseOrderItemsTable(this);
+  late final $ExpenseCategoriesTable expenseCategories =
+      $ExpenseCategoriesTable(this);
+  late final $ExpensesTable expenses = $ExpensesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -28007,7 +29420,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         orderItems,
         purchaseDealHistory,
         salesOrderItems,
-        purchaseOrderItems
+        purchaseOrderItems,
+        expenseCategories,
+        expenses
       ];
 }
 
@@ -41027,6 +42442,637 @@ typedef $$PurchaseOrderItemsTableProcessedTableManager = ProcessedTableManager<
     ),
     PurchaseOrderItem,
     PrefetchHooks Function()>;
+typedef $$ExpenseCategoriesTableCreateCompanionBuilder
+    = ExpenseCategoriesCompanion Function({
+  required String id,
+  required String name,
+  Value<String?> description,
+  Value<String?> color,
+  Value<String?> icon,
+  Value<int> sortOrder,
+  Value<bool> isActive,
+  required DateTime createdAt,
+  required DateTime updatedAt,
+  Value<int> version,
+  Value<String> syncStatus,
+  Value<int> rowid,
+});
+typedef $$ExpenseCategoriesTableUpdateCompanionBuilder
+    = ExpenseCategoriesCompanion Function({
+  Value<String> id,
+  Value<String> name,
+  Value<String?> description,
+  Value<String?> color,
+  Value<String?> icon,
+  Value<int> sortOrder,
+  Value<bool> isActive,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<int> version,
+  Value<String> syncStatus,
+  Value<int> rowid,
+});
+
+class $$ExpenseCategoriesTableFilterComposer
+    extends Composer<_$AppDatabase, $ExpenseCategoriesTable> {
+  $$ExpenseCategoriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get color => $composableBuilder(
+      column: $table.color, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get icon => $composableBuilder(
+      column: $table.icon, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+      column: $table.sortOrder, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+      column: $table.isActive, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get version => $composableBuilder(
+      column: $table.version, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get syncStatus => $composableBuilder(
+      column: $table.syncStatus, builder: (column) => ColumnFilters(column));
+}
+
+class $$ExpenseCategoriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ExpenseCategoriesTable> {
+  $$ExpenseCategoriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get color => $composableBuilder(
+      column: $table.color, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get icon => $composableBuilder(
+      column: $table.icon, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+      column: $table.sortOrder, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+      column: $table.isActive, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get version => $composableBuilder(
+      column: $table.version, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get syncStatus => $composableBuilder(
+      column: $table.syncStatus, builder: (column) => ColumnOrderings(column));
+}
+
+class $$ExpenseCategoriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ExpenseCategoriesTable> {
+  $$ExpenseCategoriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
+  GeneratedColumn<String> get color =>
+      $composableBuilder(column: $table.color, builder: (column) => column);
+
+  GeneratedColumn<String> get icon =>
+      $composableBuilder(column: $table.icon, builder: (column) => column);
+
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
+
+  GeneratedColumn<String> get syncStatus => $composableBuilder(
+      column: $table.syncStatus, builder: (column) => column);
+}
+
+class $$ExpenseCategoriesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $ExpenseCategoriesTable,
+    ExpenseCategory,
+    $$ExpenseCategoriesTableFilterComposer,
+    $$ExpenseCategoriesTableOrderingComposer,
+    $$ExpenseCategoriesTableAnnotationComposer,
+    $$ExpenseCategoriesTableCreateCompanionBuilder,
+    $$ExpenseCategoriesTableUpdateCompanionBuilder,
+    (
+      ExpenseCategory,
+      BaseReferences<_$AppDatabase, $ExpenseCategoriesTable, ExpenseCategory>
+    ),
+    ExpenseCategory,
+    PrefetchHooks Function()> {
+  $$ExpenseCategoriesTableTableManager(
+      _$AppDatabase db, $ExpenseCategoriesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ExpenseCategoriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ExpenseCategoriesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ExpenseCategoriesTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String?> description = const Value.absent(),
+            Value<String?> color = const Value.absent(),
+            Value<String?> icon = const Value.absent(),
+            Value<int> sortOrder = const Value.absent(),
+            Value<bool> isActive = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            Value<int> version = const Value.absent(),
+            Value<String> syncStatus = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ExpenseCategoriesCompanion(
+            id: id,
+            name: name,
+            description: description,
+            color: color,
+            icon: icon,
+            sortOrder: sortOrder,
+            isActive: isActive,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            version: version,
+            syncStatus: syncStatus,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String name,
+            Value<String?> description = const Value.absent(),
+            Value<String?> color = const Value.absent(),
+            Value<String?> icon = const Value.absent(),
+            Value<int> sortOrder = const Value.absent(),
+            Value<bool> isActive = const Value.absent(),
+            required DateTime createdAt,
+            required DateTime updatedAt,
+            Value<int> version = const Value.absent(),
+            Value<String> syncStatus = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ExpenseCategoriesCompanion.insert(
+            id: id,
+            name: name,
+            description: description,
+            color: color,
+            icon: icon,
+            sortOrder: sortOrder,
+            isActive: isActive,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            version: version,
+            syncStatus: syncStatus,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$ExpenseCategoriesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $ExpenseCategoriesTable,
+    ExpenseCategory,
+    $$ExpenseCategoriesTableFilterComposer,
+    $$ExpenseCategoriesTableOrderingComposer,
+    $$ExpenseCategoriesTableAnnotationComposer,
+    $$ExpenseCategoriesTableCreateCompanionBuilder,
+    $$ExpenseCategoriesTableUpdateCompanionBuilder,
+    (
+      ExpenseCategory,
+      BaseReferences<_$AppDatabase, $ExpenseCategoriesTable, ExpenseCategory>
+    ),
+    ExpenseCategory,
+    PrefetchHooks Function()>;
+typedef $$ExpensesTableCreateCompanionBuilder = ExpensesCompanion Function({
+  required String id,
+  required String expenseNumber,
+  Value<String?> expenseCategoryId,
+  required DateTime expenseDate,
+  required int amount,
+  Value<String> paymentMode,
+  Value<String?> payee,
+  Value<String?> description,
+  Value<String?> referenceType,
+  Value<String?> referenceId,
+  Value<bool> isRecurring,
+  Value<String?> recurringFrequency,
+  Value<String> status,
+  Value<String?> createdBy,
+  required DateTime createdAt,
+  required DateTime updatedAt,
+  Value<int> version,
+  Value<String> syncStatus,
+  Value<int> rowid,
+});
+typedef $$ExpensesTableUpdateCompanionBuilder = ExpensesCompanion Function({
+  Value<String> id,
+  Value<String> expenseNumber,
+  Value<String?> expenseCategoryId,
+  Value<DateTime> expenseDate,
+  Value<int> amount,
+  Value<String> paymentMode,
+  Value<String?> payee,
+  Value<String?> description,
+  Value<String?> referenceType,
+  Value<String?> referenceId,
+  Value<bool> isRecurring,
+  Value<String?> recurringFrequency,
+  Value<String> status,
+  Value<String?> createdBy,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<int> version,
+  Value<String> syncStatus,
+  Value<int> rowid,
+});
+
+class $$ExpensesTableFilterComposer
+    extends Composer<_$AppDatabase, $ExpensesTable> {
+  $$ExpensesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get expenseNumber => $composableBuilder(
+      column: $table.expenseNumber, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get expenseCategoryId => $composableBuilder(
+      column: $table.expenseCategoryId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get expenseDate => $composableBuilder(
+      column: $table.expenseDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get amount => $composableBuilder(
+      column: $table.amount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get paymentMode => $composableBuilder(
+      column: $table.paymentMode, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get payee => $composableBuilder(
+      column: $table.payee, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get referenceType => $composableBuilder(
+      column: $table.referenceType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get referenceId => $composableBuilder(
+      column: $table.referenceId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isRecurring => $composableBuilder(
+      column: $table.isRecurring, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get recurringFrequency => $composableBuilder(
+      column: $table.recurringFrequency,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get version => $composableBuilder(
+      column: $table.version, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get syncStatus => $composableBuilder(
+      column: $table.syncStatus, builder: (column) => ColumnFilters(column));
+}
+
+class $$ExpensesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ExpensesTable> {
+  $$ExpensesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get expenseNumber => $composableBuilder(
+      column: $table.expenseNumber,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get expenseCategoryId => $composableBuilder(
+      column: $table.expenseCategoryId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get expenseDate => $composableBuilder(
+      column: $table.expenseDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get amount => $composableBuilder(
+      column: $table.amount, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get paymentMode => $composableBuilder(
+      column: $table.paymentMode, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get payee => $composableBuilder(
+      column: $table.payee, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get referenceType => $composableBuilder(
+      column: $table.referenceType,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get referenceId => $composableBuilder(
+      column: $table.referenceId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isRecurring => $composableBuilder(
+      column: $table.isRecurring, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get recurringFrequency => $composableBuilder(
+      column: $table.recurringFrequency,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get version => $composableBuilder(
+      column: $table.version, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get syncStatus => $composableBuilder(
+      column: $table.syncStatus, builder: (column) => ColumnOrderings(column));
+}
+
+class $$ExpensesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ExpensesTable> {
+  $$ExpensesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get expenseNumber => $composableBuilder(
+      column: $table.expenseNumber, builder: (column) => column);
+
+  GeneratedColumn<String> get expenseCategoryId => $composableBuilder(
+      column: $table.expenseCategoryId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get expenseDate => $composableBuilder(
+      column: $table.expenseDate, builder: (column) => column);
+
+  GeneratedColumn<int> get amount =>
+      $composableBuilder(column: $table.amount, builder: (column) => column);
+
+  GeneratedColumn<String> get paymentMode => $composableBuilder(
+      column: $table.paymentMode, builder: (column) => column);
+
+  GeneratedColumn<String> get payee =>
+      $composableBuilder(column: $table.payee, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
+  GeneratedColumn<String> get referenceType => $composableBuilder(
+      column: $table.referenceType, builder: (column) => column);
+
+  GeneratedColumn<String> get referenceId => $composableBuilder(
+      column: $table.referenceId, builder: (column) => column);
+
+  GeneratedColumn<bool> get isRecurring => $composableBuilder(
+      column: $table.isRecurring, builder: (column) => column);
+
+  GeneratedColumn<String> get recurringFrequency => $composableBuilder(
+      column: $table.recurringFrequency, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
+
+  GeneratedColumn<String> get syncStatus => $composableBuilder(
+      column: $table.syncStatus, builder: (column) => column);
+}
+
+class $$ExpensesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $ExpensesTable,
+    Expense,
+    $$ExpensesTableFilterComposer,
+    $$ExpensesTableOrderingComposer,
+    $$ExpensesTableAnnotationComposer,
+    $$ExpensesTableCreateCompanionBuilder,
+    $$ExpensesTableUpdateCompanionBuilder,
+    (Expense, BaseReferences<_$AppDatabase, $ExpensesTable, Expense>),
+    Expense,
+    PrefetchHooks Function()> {
+  $$ExpensesTableTableManager(_$AppDatabase db, $ExpensesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ExpensesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ExpensesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ExpensesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> expenseNumber = const Value.absent(),
+            Value<String?> expenseCategoryId = const Value.absent(),
+            Value<DateTime> expenseDate = const Value.absent(),
+            Value<int> amount = const Value.absent(),
+            Value<String> paymentMode = const Value.absent(),
+            Value<String?> payee = const Value.absent(),
+            Value<String?> description = const Value.absent(),
+            Value<String?> referenceType = const Value.absent(),
+            Value<String?> referenceId = const Value.absent(),
+            Value<bool> isRecurring = const Value.absent(),
+            Value<String?> recurringFrequency = const Value.absent(),
+            Value<String> status = const Value.absent(),
+            Value<String?> createdBy = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            Value<int> version = const Value.absent(),
+            Value<String> syncStatus = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ExpensesCompanion(
+            id: id,
+            expenseNumber: expenseNumber,
+            expenseCategoryId: expenseCategoryId,
+            expenseDate: expenseDate,
+            amount: amount,
+            paymentMode: paymentMode,
+            payee: payee,
+            description: description,
+            referenceType: referenceType,
+            referenceId: referenceId,
+            isRecurring: isRecurring,
+            recurringFrequency: recurringFrequency,
+            status: status,
+            createdBy: createdBy,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            version: version,
+            syncStatus: syncStatus,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String expenseNumber,
+            Value<String?> expenseCategoryId = const Value.absent(),
+            required DateTime expenseDate,
+            required int amount,
+            Value<String> paymentMode = const Value.absent(),
+            Value<String?> payee = const Value.absent(),
+            Value<String?> description = const Value.absent(),
+            Value<String?> referenceType = const Value.absent(),
+            Value<String?> referenceId = const Value.absent(),
+            Value<bool> isRecurring = const Value.absent(),
+            Value<String?> recurringFrequency = const Value.absent(),
+            Value<String> status = const Value.absent(),
+            Value<String?> createdBy = const Value.absent(),
+            required DateTime createdAt,
+            required DateTime updatedAt,
+            Value<int> version = const Value.absent(),
+            Value<String> syncStatus = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ExpensesCompanion.insert(
+            id: id,
+            expenseNumber: expenseNumber,
+            expenseCategoryId: expenseCategoryId,
+            expenseDate: expenseDate,
+            amount: amount,
+            paymentMode: paymentMode,
+            payee: payee,
+            description: description,
+            referenceType: referenceType,
+            referenceId: referenceId,
+            isRecurring: isRecurring,
+            recurringFrequency: recurringFrequency,
+            status: status,
+            createdBy: createdBy,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            version: version,
+            syncStatus: syncStatus,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$ExpensesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $ExpensesTable,
+    Expense,
+    $$ExpensesTableFilterComposer,
+    $$ExpensesTableOrderingComposer,
+    $$ExpensesTableAnnotationComposer,
+    $$ExpensesTableCreateCompanionBuilder,
+    $$ExpensesTableUpdateCompanionBuilder,
+    (Expense, BaseReferences<_$AppDatabase, $ExpensesTable, Expense>),
+    Expense,
+    PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -41127,4 +43173,8 @@ class $AppDatabaseManager {
       $$SalesOrderItemsTableTableManager(_db, _db.salesOrderItems);
   $$PurchaseOrderItemsTableTableManager get purchaseOrderItems =>
       $$PurchaseOrderItemsTableTableManager(_db, _db.purchaseOrderItems);
+  $$ExpenseCategoriesTableTableManager get expenseCategories =>
+      $$ExpenseCategoriesTableTableManager(_db, _db.expenseCategories);
+  $$ExpensesTableTableManager get expenses =>
+      $$ExpensesTableTableManager(_db, _db.expenses);
 }

@@ -1198,9 +1198,64 @@ class PurchaseOrderItems extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Expense categories for classifying business expenditures.
+///
+/// Each category groups related expenses (rent, utilities, salary, etc.)
+/// for reporting and P&L analysis. Categories are user-defined and can
+/// be color-coded with icons for visual identification.
+class ExpenseCategories extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  TextColumn get description => text().nullable()();
+  TextColumn get color => text().nullable()();
+  TextColumn get icon => text().nullable()();
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+  IntColumn get version => integer().withDefault(const Constant(1))();
+  TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Business expense records for tracking operational expenditures.
+///
+/// Each expense captures the amount, payment method, date, category,
+/// payee, and description. Expenses are linked to [ExpenseCategories]
+/// for reporting and can optionally reference other business entities
+/// (bills, purchases) via [referenceType]/[referenceId].
+///
+/// Supports recurring expenses (rent, subscriptions) via [isRecurring]
+/// and [recurringFrequency].
+class Expenses extends Table {
+  TextColumn get id => text()();
+  TextColumn get expenseNumber => text()();
+  TextColumn get expenseCategoryId => text().nullable()();
+  DateTimeColumn get expenseDate => dateTime()();
+  IntColumn get amount => integer()();
+  TextColumn get paymentMode => text().withDefault(const Constant('CASH'))();
+  TextColumn get payee => text().nullable()();
+  TextColumn get description => text().nullable()();
+  TextColumn get referenceType => text().nullable()();
+  TextColumn get referenceId => text().nullable()();
+  BoolColumn get isRecurring => boolean().withDefault(const Constant(false))();
+  TextColumn get recurringFrequency => text().nullable()();
+  TextColumn get status => text().withDefault(const Constant('completed'))();
+  TextColumn get createdBy => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+  IntColumn get version => integer().withDefault(const Constant(1))();
+  TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 /// Main Drift database class for the SS Mart ERP application.
 ///
-/// This class registers all 48 tables and provides the migration strategy.
+/// This class registers all 50 tables and provides the migration strategy.
 /// It extends the generated `_$AppDatabase` which provides the table
 /// accessors, DAOs, and query builders.
 ///
@@ -1270,6 +1325,8 @@ class PurchaseOrderItems extends Table {
   PurchaseDealHistory,
   SalesOrderItems,
   PurchaseOrderItems,
+  ExpenseCategories,
+  Expenses,
 ])
 class AppDatabase extends _$AppDatabase {
   /// Production constructor — opens the on-disk SQLite database.
@@ -1282,7 +1339,7 @@ class AppDatabase extends _$AppDatabase {
   /// Current database schema version. Increment this when adding/removing
   /// columns or tables, and add a migration step in [migration].
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   /// Migration strategy for schema lifecycle management.
   ///
@@ -1366,6 +1423,11 @@ class AppDatabase extends _$AppDatabase {
             await m.addColumn(billItems, billItems.sgstAmount);
             await m.addColumn(billItems, billItems.igstAmount);
             await m.addColumn(billItems, billItems.taxRuleVersion);
+          }
+          if (from < 5) {
+            // Expense Management: Create expense tracking tables
+            await m.createTable(expenseCategories);
+            await m.createTable(expenses);
           }
         },
       );
