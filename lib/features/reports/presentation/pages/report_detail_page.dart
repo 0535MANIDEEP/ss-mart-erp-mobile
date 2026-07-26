@@ -261,6 +261,8 @@ class ReportDetailPage extends StatelessWidget {
         return 'Payment Summary';
       case ReportType.commissionSummary:
         return 'Commission Summary';
+      case ReportType.agingReport:
+        return 'Aging Report';
     }
   }
 }

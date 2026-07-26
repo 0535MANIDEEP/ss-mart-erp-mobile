@@ -54,6 +54,7 @@ import '../features/accounting/presentation/pages/accounting_page.dart';
 import '../features/expenses/presentation/pages/expenses_page.dart';
 import '../features/payments/presentation/pages/payments_page.dart';
 import '../features/settings/presentation/pages/notification_settings_page.dart';
+import '../features/settings/presentation/pages/stores_page.dart';
 import '../features/challans/domain/entities/delivery_challan.dart';
 import '../features/orders/presentation/pages/orders_page.dart';
 import '../features/orders/presentation/pages/order_detail_page.dart';
@@ -395,6 +396,11 @@ final GoRouter appRouter = GoRouter(
           path: '/settings/notifications',
           name: 'notification-settings',
           builder: (context, state) => const NotificationSettingsPage(),
+        ),
+        GoRoute(
+          path: '/settings/stores',
+          name: 'stores',
+          builder: (context, state) => const StoresPage(),
         ),
         GoRoute(
           path: '/orders',

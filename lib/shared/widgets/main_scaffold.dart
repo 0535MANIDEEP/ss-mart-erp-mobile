@@ -250,6 +250,14 @@ class MainScaffold extends StatelessWidget {
                 },
               ),
               ListTile(
+                leading: const Icon(Icons.store_mall_directory),
+                title: const Text('Stores / Locations'),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.go('/settings/stores');
+                },
+              ),
+              ListTile(
                 leading: const Icon(Icons.settings),
                 title: const Text('Settings'),
                 onTap: () {

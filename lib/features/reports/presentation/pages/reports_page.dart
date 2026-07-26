@@ -53,6 +53,7 @@ class ReportsPage extends StatelessWidget {
               ReportItem('Top Customers', 'By purchase amount', ReportType.topCustomers),
               ReportItem('Customer Balance', 'Outstanding dues', ReportType.customerBalance),
               ReportItem('Loyalty Summary', 'Points earned/redeemed', ReportType.loyaltySummary),
+              ReportItem('Aging Report', 'Overdue payments by age', ReportType.agingReport),
             ],
           ),
 

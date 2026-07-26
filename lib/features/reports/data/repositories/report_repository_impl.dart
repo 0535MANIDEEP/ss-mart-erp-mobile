@@ -93,6 +93,8 @@ class ReportRepositoryImpl implements ReportRepository {
         return _paymentSummaryReport(start, end);
       case ReportType.commissionSummary:
         return _commissionSummaryReport(start, end);
+      case ReportType.agingReport:
+        return _agingReport(start, end);
     }
   }
 
@@ -1368,6 +1370,88 @@ class ReportRepositoryImpl implements ReportRepository {
         'Total Received': '₹${(totalReceived / 100).toStringAsFixed(2)}',
         'Total Outstanding': '₹${(totalDue / 100).toStringAsFixed(2)}',
         'Total Bills': completedBills.length,
+      },
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Aging Reports
+  // ---------------------------------------------------------------------------
+
+  Future<ReportData> _agingReport(DateTime start, DateTime end) async {
+    final bills = await _dao.getBillsByDateRange(
+      DateTime.fromMillisecondsSinceEpoch(0),
+      end,
+    );
+
+    final customers = await _dao.getAllCustomers();
+    final customerMap = {for (final c in customers) c.id: c};
+    final now = DateTime.now();
+
+    final columns = ['Customer', 'Total Due', 'Oldest Bill', 'Days Overdue', 'Bucket', 'Bills'];
+    final rows = <Map<String, dynamic>>[];
+
+    final customerDue = <String, int>{};
+    final customerOldest = <String, DateTime>{};
+    final customerBills = <String, int>{};
+
+    for (final bill in bills) {
+      if (bill.dueAmount <= 0 || bill.status != 'completed') continue;
+      final cid = bill.customerId ?? '';
+      if (cid.isEmpty) continue;
+
+      customerDue[cid] = (customerDue[cid] ?? 0) + bill.dueAmount;
+      customerBills[cid] = (customerBills[cid] ?? 0) + 1;
+
+      final existing = customerOldest[cid];
+      if (existing == null || bill.billDate.isBefore(existing)) {
+        customerOldest[cid] = bill.billDate;
+      }
+    }
+
+    for (final cid in customerDue.keys) {
+      final customer = customerMap[cid];
+      final due = customerDue[cid]!;
+      final oldest = customerOldest[cid]!;
+      final daysOverdue = now.difference(oldest).inDays;
+
+      String bucket;
+      if (daysOverdue <= 30) {
+        bucket = '0–30 days';
+      } else if (daysOverdue <= 60) {
+        bucket = '31–60 days';
+      } else if (daysOverdue <= 90) {
+        bucket = '61–90 days';
+      } else {
+        bucket = '90+ days';
+      }
+
+      rows.add({
+        'Customer': customer?.name ?? 'Unknown',
+        'Total Due': '₹${(due / 100).toStringAsFixed(2)}',
+        'Oldest Bill': '${oldest.day}/${oldest.month}/${oldest.year}',
+        'Days Overdue': '$daysOverdue',
+        'Bucket': bucket,
+        'Bills': '${customerBills[cid]}',
+      });
+    }
+
+    rows.sort((a, b) => (b['Days Overdue'] ?? '0').compareTo(a['Days Overdue'] ?? '0'));
+
+    final totalDue = customerDue.values.fold<int>(0, (s, v) => s + v);
+    final overdue30 = rows.where((r) => r['Bucket'] == '31–60 days' || r['Bucket'] == '61–90 days' || r['Bucket'] == '90+ days').length;
+
+    return ReportData(
+      type: ReportType.agingReport,
+      title: 'Aging Report',
+      description: 'Outstanding payments by age — as of ${DateFormat('dd MMM yyyy').format(now)}',
+      generatedAt: now,
+      columns: columns,
+      rows: rows,
+      summary: {
+        'Total Outstanding': '₹${(totalDue / 100).toStringAsFixed(2)}',
+        'Customers with Dues': '${customerDue.length}',
+        'Overdue (>30 days)': '$overdue30',
       },
     );
   }
