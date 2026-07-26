@@ -14,7 +14,6 @@ import '../features/billing/presentation/bloc/billing_bloc.dart';
 void registerBillingFeature(GetIt sl) {
   sl.registerFactory(() => BillingBloc(
     createBillUseCase: sl(),
-    getDaySalesTotalUseCase: sl(),
     getRecentBillsUseCase: sl(),
   ));
   sl.registerLazySingleton(() => CreateBillUseCase(sl()));
@@ -33,7 +32,6 @@ void registerBillingFeature(GetIt sl) {
   sl.registerLazySingleton<BillRepository>(
     () => BillRepositoryImpl(
       localDataSource: sl(),
-      remoteDataSource: sl(),
       stockRepository: sl(),
       loyaltyRepository: sl(),
       syncRepository: sl(),

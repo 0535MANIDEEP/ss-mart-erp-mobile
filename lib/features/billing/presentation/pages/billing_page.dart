@@ -5,12 +5,10 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import '../bloc/billing_bloc.dart';
 import '../../domain/entities/bill_entity.dart';
-import '../../domain/entities/gst_calculator.dart';
 import '../../../products/domain/repositories/product_repository.dart';
 import '../../../products/domain/entities/product_entity.dart';
 import '../../../customers/domain/repositories/customer_repository.dart';
 import '../../../customers/domain/entities/customer_entity.dart';
-import '../../../scanner/presentation/pages/barcode_scanner_page.dart';
 import '../../../../core/services/bluetooth_printer_service.dart';
 
 class BillingPage extends StatelessWidget {
@@ -94,7 +92,7 @@ class BillingView extends StatelessWidget {
     final bill = state.bill;
     if (bill == null) return;
 
-    showDialog(
+    showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
@@ -433,7 +431,7 @@ class BillingView extends StatelessWidget {
     final percentController = TextEditingController();
     final amountController = TextEditingController();
 
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text('Discount - ${item.productName}'),
@@ -514,7 +512,7 @@ class BillingView extends StatelessWidget {
     final percentController = TextEditingController();
     final amountController = TextEditingController();
 
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Bill Discount'),
@@ -590,7 +588,7 @@ class BillingView extends StatelessWidget {
   }
 
   void _showProductSearch(BuildContext context) {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       builder: (_) => BlocProvider.value(
@@ -733,7 +731,7 @@ class BillingView extends StatelessWidget {
   }
 
   void _showCustomerSearch(BuildContext context) {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       builder: (_) => BlocProvider.value(
@@ -745,7 +743,7 @@ class BillingView extends StatelessWidget {
 
   void _showRecentBills(BuildContext context) {
     context.read<BillingBloc>().add(const LoadRecentBills());
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       builder: (_) => BlocProvider.value(
@@ -813,7 +811,7 @@ class BillingView extends StatelessWidget {
   }
 
   void _showPaymentDialog(BuildContext context, BillingReady state) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Process Payment'),
@@ -1099,73 +1097,6 @@ class _ProductSearchSheetState extends State<ProductSearchSheet> {
                 icon: const Icon(Icons.add_circle, color: Color(0xFF1B5E20)),
                 onPressed: () => _addToCart(product),
               ),
-      ),
-    );
-  }
-
-  void _showBarcodeInputDialog(BuildContext context) {
-    final barcodeController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Enter Barcode'),
-        content: TextField(
-          controller: barcodeController,
-          decoration: const InputDecoration(
-            labelText: 'Barcode',
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.qr_code),
-          ),
-          autofocus: true,
-          keyboardType: TextInputType.text,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final barcode = barcodeController.text.trim();
-              if (barcode.isEmpty) return;
-              Navigator.pop(dialogContext);
-              final result = await _productRepo.getProducts(
-                search: barcode,
-                perPage: 10,
-              );
-              result.fold(
-                (failure) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Error: ${failure.message}'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                },
-                (products) {
-                  final matched = products.where((p) => p.barcode == barcode).toList();
-                  if (matched.isNotEmpty) {
-                    _addToCart(matched.first);
-                  } else if (products.isNotEmpty) {
-                    _addToCart(products.first);
-                  } else {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Product not found for barcode'),
-                          backgroundColor: Colors.orange,
-                        ),
-                      );
-                    }
-                  }
-                },
-              );
-            },
-            child: const Text('Lookup'),
-          ),
-        ],
       ),
     );
   }

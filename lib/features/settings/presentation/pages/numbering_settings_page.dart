@@ -91,7 +91,7 @@ class _NumberingSettingsPageState extends State<NumberingSettingsPage> {
 
   void _editConfig(NumberingConfigData config) {
     final prefixController = TextEditingController(text: config.prefix);
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
         title: Text('Edit ${config.documentType}'),

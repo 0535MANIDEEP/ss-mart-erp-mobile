@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 
-import '../../error/exceptions.dart';
-import '../../error/failures.dart';
+import 'exceptions.dart';
+import 'failures.dart';
 import '../utils/logger.dart';
 
 /// Centralized error handler that converts exceptions to failures.

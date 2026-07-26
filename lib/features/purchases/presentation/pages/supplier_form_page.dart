@@ -6,7 +6,6 @@ import '../../data/datasources/supplier_local_datasource.dart';
 import '../../data/datasources/supplier_remote_datasource.dart';
 import '../../data/repositories/supplier_repository_impl.dart';
 import '../../domain/entities/supplier_entity.dart';
-import '../../domain/usecases/create_supplier_usecase.dart';
 import '../../../../injection/injection_container.dart';
 
 /// Form page for creating and editing suppliers.

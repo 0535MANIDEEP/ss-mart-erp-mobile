@@ -72,7 +72,7 @@ class _CustomerTagsPageState extends State<CustomerTagsPage> {
     String selectedColor = '#FF9800';
     final colors = ['#FF9800', '#4CAF50', '#2196F3', '#F44336', '#9C27B0', '#FF5722', '#795548', '#607D8B'];
 
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (_) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(

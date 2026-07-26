@@ -98,7 +98,7 @@ class _CommunicationHistoryPageState extends State<CommunicationHistoryPage> {
     String type = 'call';
     final notesController = TextEditingController();
     final outcomeController = TextEditingController();
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Log Communication'),

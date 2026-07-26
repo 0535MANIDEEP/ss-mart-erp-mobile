@@ -184,7 +184,7 @@ class ReportsPage extends StatelessWidget {
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(
+                    MaterialPageRoute<dynamic>(
                       builder: (_) => BlocProvider(
                         create: (_) => GetIt.instance<ReportsBloc>()
                           ..add(LoadReport(type: report.reportType)),

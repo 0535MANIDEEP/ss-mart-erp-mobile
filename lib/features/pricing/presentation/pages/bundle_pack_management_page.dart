@@ -107,7 +107,7 @@ class _BundlePackManagementPageState extends State<BundlePackManagementPage> {
 
   /// Opens the create/edit bundle bottom sheet for a new bundle.
   void _openCreateBundleSheet() {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
@@ -125,7 +125,7 @@ class _BundlePackManagementPageState extends State<BundlePackManagementPage> {
 
   /// Opens the bundle detail/edit sheet for an existing bundle.
   void _openEditBundleSheet(BundlePack bundle) {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
@@ -520,7 +520,6 @@ class _BundleEditSheetState extends State<_BundleEditSheet> {
   final Map<String, _BundleItemData> _bundleItems = {};
 
   List<Product> _allProducts = [];
-  bool _isLoadingProducts = true;
   String _productSearchQuery = '';
 
   bool get _isEditing => widget.existingBundle != null;
@@ -555,12 +554,9 @@ class _BundleEditSheetState extends State<_BundleEditSheet> {
 
   /// Loads all active products for the product picker.
   Future<void> _loadProducts() async {
-    setState(() => _isLoadingProducts = true);
     try {
       _allProducts = await widget.dao.getActiveProducts();
-      setState(() => _isLoadingProducts = false);
     } catch (e) {
-      setState(() => _isLoadingProducts = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -751,7 +747,7 @@ class _BundleEditSheetState extends State<_BundleEditSheet> {
 
   /// Shows a product picker dialog to search and add products.
   void _showProductPicker() {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(

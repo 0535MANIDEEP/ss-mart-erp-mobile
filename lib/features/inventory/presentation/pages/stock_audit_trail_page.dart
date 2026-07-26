@@ -107,7 +107,7 @@ class _StockAuditTrailPageState extends State<StockAuditTrailPage> {
   }
 
   void _showFilterDialog() {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Filter by Operation'),

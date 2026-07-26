@@ -81,7 +81,7 @@ class _CustomerGroupsPageState extends State<CustomerGroupsPage> {
     final discountValueController = TextEditingController(text: (group?.discountValue ?? 0).toString());
     final isEdit = group != null;
 
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
         title: Text(isEdit ? 'Edit Group' : 'New Group'),
@@ -118,14 +118,14 @@ class _CustomerGroupsPageState extends State<CustomerGroupsPage> {
                 'discountValue': double.tryParse(discountValueController.text) ?? 0,
               };
               if (isEdit) {
-                await (db.update(db.customerGroups)..where((t) => t.id.equals(group!.id))).write(
+                await (db.update(db.customerGroups)..where((t) => t.id.equals(group.id))).write(
                   CustomerGroupsCompanion(
                     name: Value(data['name'] as String),
                     description: Value(data['description'] as String?),
                     discountType: Value(data['discountType'] as String),
                     discountValue: Value(data['discountValue'] as double),
                     updatedAt: Value(DateTime.now()),
-                    version: Value(group!.version + 1),
+                    version: Value(group.version + 1),
                     syncStatus: const Value('pending'),
                   ),
                 );

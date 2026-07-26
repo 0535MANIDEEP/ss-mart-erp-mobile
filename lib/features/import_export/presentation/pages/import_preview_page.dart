@@ -81,7 +81,7 @@ class _ImportPreviewPageState extends State<ImportPreviewPage> {
   bool get _hasErrors => widget.errors.isNotEmpty;
 
   void _confirmImport() {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text('Import ${widget.entityType}'),
@@ -230,7 +230,7 @@ class _ImportPreviewPageState extends State<ImportPreviewPage> {
 
   /// Shows the full mapping details in a bottom sheet.
   void _showMappingDetails() {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       builder: (context) => SafeArea(
         child: Column(

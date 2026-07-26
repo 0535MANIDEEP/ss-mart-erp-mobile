@@ -189,7 +189,7 @@ class _ProductImagesPageState extends State<ProductImagesPage> {
   void _openFullScreenViewer(int initialIndex) {
     Navigator.push(
       context,
-      MaterialPageRoute(
+      MaterialPageRoute<dynamic>(
         builder: (_) => _FullScreenImageViewer(
           images: _images,
           initialIndex: initialIndex,
@@ -378,7 +378,7 @@ class _ProductImagesPageState extends State<ProductImagesPage> {
 
   /// Shows the action sheet for an image (set primary, delete).
   void _showImageActions(ProductImage image) {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       builder: (context) => SafeArea(
         child: Column(

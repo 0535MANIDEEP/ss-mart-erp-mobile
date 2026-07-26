@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../domain/entities/sync_queue_entity.dart';
 import '../../domain/repositories/sync_repository.dart';
 
 part 'sync_event.dart';

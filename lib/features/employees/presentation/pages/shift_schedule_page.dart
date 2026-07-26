@@ -133,7 +133,7 @@ class _ShiftSchedulePageState extends State<ShiftSchedulePage> {
   void _showAssignShiftDialog({Employee? employee, ShiftSchedule? existingSchedule}) {
     String? selectedEmployeeId = employee?.id;
     String? selectedShiftId = existingSchedule?.shiftId;
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Assign Shift'),

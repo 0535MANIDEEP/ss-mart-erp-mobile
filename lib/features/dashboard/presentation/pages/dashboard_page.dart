@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import '../bloc/dashboard_bloc.dart';
 import '../../domain/entities/dashboard_entity.dart';
@@ -919,7 +918,7 @@ class DashboardView extends StatelessWidget {
     if (state is! DashboardLoaded) return;
 
     final stats = state.stats;
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       builder: (_) => DraggableScrollableSheet(
         initialChildSize: 0.5,

@@ -101,7 +101,7 @@ class InventoryView extends StatelessWidget {
             onPressed: () async {
               final result = await Navigator.push<bool>(
                 context,
-                MaterialPageRoute(
+                MaterialPageRoute<bool>(
                   builder: (_) => const StockAdjustmentPage(),
                 ),
               );
@@ -117,7 +117,7 @@ class InventoryView extends StatelessWidget {
             onPressed: () async {
               final result = await Navigator.push<bool>(
                 context,
-                MaterialPageRoute(
+                MaterialPageRoute<bool>(
                   builder: (_) => const StockTransferPage(),
                 ),
               );
@@ -207,7 +207,7 @@ class InventoryView extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
+                MaterialPageRoute<dynamic>(
                   builder: (_) => StockDetailPage(stock: stock),
                 ),
               );

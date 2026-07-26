@@ -51,7 +51,7 @@ class CustomerListPage extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             final result = await Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const CustomerFormPage()),
+              MaterialPageRoute<dynamic>(builder: (_) => const CustomerFormPage()),
             );
             if (result == true) {
               context.read<CustomerBloc>().add(const LoadCustomers());
@@ -99,7 +99,7 @@ class CustomerCard extends StatelessWidget {
             : null,
         onTap: () async {
           final result = await Navigator.of(context).push(
-            MaterialPageRoute(
+            MaterialPageRoute<dynamic>(
               builder: (_) => CustomerDetailPage(customerId: customer.id),
             ),
           );

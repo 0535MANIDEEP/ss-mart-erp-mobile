@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../../../core/services/backup_service.dart';
 
 /// Page for managing database backup and restore operations.
@@ -381,7 +380,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
 
   /// Shows a bottom sheet to select a backup for restoration.
   void _showRestorePicker() {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       builder: (context) => SafeArea(
         child: Column(

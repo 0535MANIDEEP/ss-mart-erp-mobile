@@ -91,7 +91,7 @@ class _LoyaltyCardManagementPageState extends State<LoyaltyCardManagementPage> {
 
   void _issueCard() {
     final cardNumberController = TextEditingController();
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Issue New Card'),

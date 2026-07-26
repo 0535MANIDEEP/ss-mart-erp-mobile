@@ -159,7 +159,7 @@ class _LoyaltyAdjustmentPageState extends State<LoyaltyAdjustmentPage> {
     final points = int.parse(_pointsController.text);
     final isAdd = points > 0;
 
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(isAdd ? 'Add Points' : 'Deduct Points'),

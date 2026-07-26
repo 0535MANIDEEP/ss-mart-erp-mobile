@@ -63,9 +63,6 @@ class BluetoothPrinterService {
   /// Current paper width setting.
   String get paperWidth => _paperWidth;
 
-  /// Characters per line based on paper width.
-  int get _charsPerLine => _paperWidth == '58mm' ? 32 : 48;
-
   /// Initializes the service and loads saved settings.
   Future<void> initialize() async {
     final prefs = await SharedPreferences.getInstance();

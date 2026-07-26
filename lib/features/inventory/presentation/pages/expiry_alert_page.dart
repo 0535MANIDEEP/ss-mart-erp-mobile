@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/stock_entity.dart';
 import '../bloc/inventory_bloc.dart';
 import '../../../../injection/injection_container.dart';
@@ -76,7 +75,7 @@ class _ExpiryAlertPageState extends State<ExpiryAlertPage>
         }
       });
       // Cancel subscription after initial load completes
-      Future.delayed(const Duration(seconds: 5), () => subscription.cancel());
+      Future<void>.delayed(const Duration(seconds: 5), () => subscription.cancel());
     } catch (e) {
       setState(() {
         _error = e.toString();
@@ -91,10 +90,6 @@ class _ExpiryAlertPageState extends State<ExpiryAlertPage>
 
   List<Stock> get _nearExpiryItems =>
       _allStock.where((s) => !s.isExpired && s.isNearExpiry).toList()
-        ..sort((a, b) => a.expiryDate!.compareTo(b.expiryDate!));
-
-  List<Stock> get _safeItems =>
-      _allStock.where((s) => !s.isExpired && !s.isNearExpiry).toList()
         ..sort((a, b) => a.expiryDate!.compareTo(b.expiryDate!));
 
   List<Stock> get _currentItems {

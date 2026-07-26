@@ -25,7 +25,6 @@
 ///   For larger datasets, push pagination down to the DAO with `limit`/`offset`.
 library;
 
-import 'package:drift/drift.dart';
 import '../../../../database/app_database.dart' as db;
 import '../../domain/entities/product_entity.dart';
 

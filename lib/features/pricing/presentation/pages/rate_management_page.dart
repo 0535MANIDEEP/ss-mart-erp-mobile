@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:drift/drift.dart' hide Column, IdColumn;
+import 'package:drift/drift.dart' hide Column;
 import '../../../../database/database_dao.dart';
 import '../../../../database/app_database.dart';
 
@@ -42,7 +42,6 @@ class _RateManagementPageState extends State<RateManagementPage> {
 
   bool _isLoading = false;
   bool _isSaving = false;
-  String? _errorMessage;
 
   // Product search
   final _searchController = TextEditingController();
@@ -58,7 +57,6 @@ class _RateManagementPageState extends State<RateManagementPage> {
 
   // Party rates for selected product
   List<_PartyRateRow> _partyRateRows = [];
-  Customer? _selectedCustomer;
 
   // Rate history (audit-like)
   List<_RateHistoryEntry> _rateHistory = [];
@@ -121,7 +119,6 @@ class _RateManagementPageState extends State<RateManagementPage> {
     } catch (e) {
       setState(() {
         _searchResults = [];
-        _errorMessage = 'Failed to search products: ${_friendlyError(e)}';
       });
       _showErrorSnackBar('Could not search products. Please try again.');
     }
@@ -434,7 +431,6 @@ class _RateManagementPageState extends State<RateManagementPage> {
   /// Shows a searchable customer picker dialog.
   Future<Customer?> _showCustomerPicker() async {
     List<Customer> customers = [];
-    String searchQuery = '';
 
     return showDialog<Customer>(
       context: context,
@@ -457,7 +453,6 @@ class _RateManagementPageState extends State<RateManagementPage> {
                         isDense: true,
                       ),
                       onChanged: (value) async {
-                        searchQuery = value;
                         if (value.trim().length >= 2) {
                           final results = await _dao.searchCustomers(value.trim());
                           setDialogState(() => customers = results);
@@ -634,13 +629,6 @@ class _RateManagementPageState extends State<RateManagementPage> {
   String _formatPaise(int paise) {
     if (paise == 0) return '';
     return (paise / 100).toStringAsFixed(paise % 100 == 0 ? 0 : 2);
-  }
-
-  /// Converts rupee string to paise integer.
-  int _toPaise(String rupee) {
-    final parsed = double.tryParse(rupee);
-    if (parsed == null) return 0;
-    return (parsed * 100).round();
   }
 
   /// Returns a human-readable label for a rate type key.
@@ -1271,7 +1259,7 @@ class _RateManagementPageState extends State<RateManagementPage> {
         decoration: BoxDecoration(
           color: Colors.grey.shade50,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.grey.shade200!),
+          border: Border.all(color: Colors.grey.shade200),
         ),
         child: Center(
           child: Text(
@@ -1394,7 +1382,7 @@ class _RateManagementPageState extends State<RateManagementPage> {
                 decoration: BoxDecoration(
                   color: Colors.grey.shade50,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey.shade200!),
+                  border: Border.all(color: Colors.grey.shade200),
                 ),
                 child: Center(
                   child: Column(
@@ -1453,7 +1441,7 @@ class _RateManagementPageState extends State<RateManagementPage> {
         color: isActive ? color.withOpacity(0.04) : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: isActive ? color.withOpacity(0.2) : Colors.grey.shade200!,
+          color: isActive ? color.withOpacity(0.2) : Colors.grey.shade200,
         ),
       ),
       child: Row(
@@ -1573,7 +1561,7 @@ class _RateManagementPageState extends State<RateManagementPage> {
                 decoration: BoxDecoration(
                   color: Colors.grey.shade50,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey.shade200!),
+                  border: Border.all(color: Colors.grey.shade200),
                 ),
                 child: Center(
                   child: Text(

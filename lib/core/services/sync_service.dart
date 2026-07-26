@@ -3,7 +3,6 @@ import 'package:drift/drift.dart' hide Column;
 import '../../database/app_database.dart';
 import '../../database/database_dao.dart';
 import '../network/network_info.dart';
-import '../error/exceptions.dart';
 
 /// Background sync service that processes the offline-to-online sync queue.
 ///
@@ -176,7 +175,7 @@ class SyncService {
 
         // Exponential backoff: 1s, 2s, 4s, 8s, etc.
         final delaySeconds = (1 << item.retryCount).clamp(1, 30);
-        await Future.delayed(Duration(seconds: delaySeconds));
+        await Future<void>.delayed(Duration(seconds: delaySeconds));
 
         try {
           // Reset status to in_progress
@@ -297,7 +296,7 @@ class SyncService {
     // }
 
     // Simulate network delay for development
-    await Future.delayed(const Duration(milliseconds: 100));
+    await Future<void>.delayed(const Duration(milliseconds: 100));
   }
 
   /// Disposes resources and stops any running timers.

@@ -527,7 +527,7 @@ class _DiscountSchemeManagementPageState
       text: rule?.discountValue.toString() ?? '',
     );
 
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
@@ -927,7 +927,7 @@ class _DiscountSchemeManagementPageState
       text: rule?.priority.toString() ?? '0',
     );
 
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(

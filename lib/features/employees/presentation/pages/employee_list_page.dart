@@ -22,7 +22,7 @@ class EmployeeListPage extends StatelessWidget {
               onPressed: () async {
                 final result = await Navigator.push<bool>(
                   context,
-                  MaterialPageRoute(
+                  MaterialPageRoute<bool>(
                     builder: (_) => const EmployeeFormPage(),
                   ),
                 );
@@ -92,7 +92,7 @@ class EmployeeCard extends StatelessWidget {
         onTap: () async {
           final result = await Navigator.push<bool>(
             context,
-            MaterialPageRoute(
+            MaterialPageRoute<bool>(
               builder: (_) => EmployeeDetailPage(employeeId: employee.id),
             ),
           );

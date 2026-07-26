@@ -51,7 +51,7 @@ class ProductListPage extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             final result = await Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const ProductFormPage()),
+              MaterialPageRoute<dynamic>(builder: (_) => const ProductFormPage()),
             );
             if (result == true) {
               context.read<ProductBloc>().add(const LoadProducts());
@@ -100,7 +100,7 @@ class ProductCard extends StatelessWidget {
         ),
         onTap: () async {
           final result = await Navigator.of(context).push(
-            MaterialPageRoute(
+            MaterialPageRoute<dynamic>(
               builder: (_) => ProductDetailPage(productId: product.id),
             ),
           );

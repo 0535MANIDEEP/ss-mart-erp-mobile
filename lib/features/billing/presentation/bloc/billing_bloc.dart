@@ -9,7 +9,6 @@ part 'billing_state.dart';
 
 class BillingBloc extends Bloc<BillingEvent, BillingState> {
   final CreateBillUseCase _createBillUseCase;
-  final GetDaySalesTotalUseCase _getDaySalesTotalUseCase;
   final GetRecentBillsUseCase _getRecentBillsUseCase;
 
   // Default seller state code (company's state - Karnataka = 29)
@@ -17,10 +16,8 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
 
   BillingBloc({
     required CreateBillUseCase createBillUseCase,
-    required GetDaySalesTotalUseCase getDaySalesTotalUseCase,
     required GetRecentBillsUseCase getRecentBillsUseCase,
   })  : _createBillUseCase = createBillUseCase,
-        _getDaySalesTotalUseCase = getDaySalesTotalUseCase,
         _getRecentBillsUseCase = getRecentBillsUseCase,
         super(BillingInitial()) {
     on<InitializeBilling>(_onInitializeBilling);

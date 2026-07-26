@@ -2,10 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import 'package:pdf/widgets.dart' as pw show PdfGoogleFonts;
-import 'package:pdf/widgets.dart' as pw show PdfPageFormat;
 import '../../domain/entities/bill_entity.dart';
-import '../../domain/entities/gst_calculator.dart';
 
 class ReceiptGenerator {
   static final ReceiptGenerator _instance = ReceiptGenerator._internal();

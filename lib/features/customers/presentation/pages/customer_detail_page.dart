@@ -28,7 +28,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
   }
 
   void _confirmDelete(BuildContext context, Customer customer) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Customer'),
@@ -108,7 +108,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
             tooltip: 'Edit',
             onPressed: () async {
               final result = await Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<dynamic>(
                   builder: (_) => CustomerFormPage(customer: customer),
                 ),
               );

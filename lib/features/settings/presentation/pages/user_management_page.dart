@@ -81,7 +81,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
     final nameController = TextEditingController();
     final emailController = TextEditingController();
     String selectedRole = 'cashier';
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Add User'),

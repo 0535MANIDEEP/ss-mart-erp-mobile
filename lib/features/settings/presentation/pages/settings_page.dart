@@ -25,7 +25,7 @@ class SettingsPage extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
+                MaterialPageRoute<dynamic>(
                   builder: (_) => const CompanySettingsPage(),
                 ),
               );
@@ -38,7 +38,7 @@ class SettingsPage extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
+                MaterialPageRoute<dynamic>(
                   builder: (_) => const TaxSettingsPage(),
                 ),
               );
@@ -54,7 +54,7 @@ class SettingsPage extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
+                MaterialPageRoute<dynamic>(
                   builder: (_) => const BackupRestorePage(),
                 ),
               );
@@ -67,7 +67,7 @@ class SettingsPage extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
+                MaterialPageRoute<dynamic>(
                   builder: (_) => const SyncSettingsPage(),
                 ),
               );
@@ -639,7 +639,7 @@ class _SyncSettingsPageState extends State<SyncSettingsPage> {
   /// Shows a dialog to pick the sync frequency interval.
   void _showFrequencyPicker(BuildContext context) {
     final frequencies = [5, 15, 30, 60];
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (ctx) => SimpleDialog(
         title: const Text('Sync Frequency'),
@@ -728,7 +728,7 @@ void _showHsnSacDialog(BuildContext context) {
     {'code': '9983', 'description': 'Other professional services', 'gstRate': '18%'},
   ];
 
-  showDialog(
+  showDialog<void>(
     context: context,
     builder: (ctx) => AlertDialog(
       title: const Text('HSN/SAC Codes'),
@@ -769,7 +769,7 @@ void _showPrinterSettingsDialog(BuildContext context) {
   String selectedPaperSize = 'A4';
   String selectedConnectionType = 'Bluetooth';
 
-  showDialog(
+  showDialog<void>(
     context: context,
     builder: (ctx) => StatefulBuilder(
       builder: (context, setDialogState) => AlertDialog(

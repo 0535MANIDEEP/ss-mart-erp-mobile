@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/employee_bloc.dart';
-import '../../../auth/data/datasources/auth_local_datasource.dart';
 import '../../../../injection/injection_container.dart';
 
 class AttendancePage extends StatelessWidget {
@@ -248,7 +247,7 @@ class _AttendanceViewState extends State<AttendanceView> {
 
   void _showPinDialog(BuildContext context, String action, String employeeId) {
     final pinController = TextEditingController();
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(action == 'clockIn' ? 'Clock In' : 'Clock Out'),
@@ -291,11 +290,5 @@ class _AttendanceViewState extends State<AttendanceView> {
         ],
       ),
     );
-  }
-
-  Future<String?> _getEmployeeIdFromUser() async {
-    final authLocal = sl<AuthLocalDataSource>();
-    final user = await authLocal.getUser();
-    return user?['id'] as String?;
   }
 }

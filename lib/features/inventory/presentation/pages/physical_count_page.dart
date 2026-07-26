@@ -100,7 +100,7 @@ class _PhysicalCountPageState extends State<PhysicalCountPage> {
   void _startNewCount() {
     final locationController = TextEditingController(text: 'MAIN');
     final notesController = TextEditingController();
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Start New Count'),

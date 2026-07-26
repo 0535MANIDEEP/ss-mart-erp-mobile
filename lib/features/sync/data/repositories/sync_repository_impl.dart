@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:dartz/dartz.dart';
-import 'package:drift/drift.dart';
 import 'package:http/http.dart' as http;
 import '../../../../database/app_database.dart' as db;
 import '../../../../core/error/failures.dart';
@@ -335,7 +332,7 @@ class SyncRepositoryImpl implements SyncRepository {
 
       while (failedItems.isNotEmpty && attempt < maxAttempts) {
         final delay = Duration(milliseconds: 1000 * (1 << attempt));
-        await Future.delayed(delay);
+        await Future<void>.delayed(delay);
 
         for (final row in failedItems) {
           await updateStatus(row.id, 'in_progress');

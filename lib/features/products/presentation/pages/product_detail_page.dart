@@ -27,7 +27,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   }
 
   void _confirmDelete(BuildContext context, Product product) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Product'),
@@ -107,7 +107,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             tooltip: 'Edit',
             onPressed: () async {
               final result = await Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<dynamic>(
                   builder: (_) => ProductFormPage(product: product),
                 ),
               );

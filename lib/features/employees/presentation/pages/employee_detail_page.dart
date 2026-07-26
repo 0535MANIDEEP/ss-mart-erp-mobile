@@ -44,7 +44,7 @@ class _EmployeeDetailView extends StatelessWidget {
                   onPressed: () async {
                     final result = await Navigator.push<bool>(
                       context,
-                      MaterialPageRoute(
+                      MaterialPageRoute<bool>(
                         builder: (_) => EmployeeFormPage(
                           employee: state.employee,
                         ),
@@ -313,7 +313,7 @@ class _EmployeeDetailView extends StatelessWidget {
   }
 
   void _confirmDelete(BuildContext context, Employee employee) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Employee'),

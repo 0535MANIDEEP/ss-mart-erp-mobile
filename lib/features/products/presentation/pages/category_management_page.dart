@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../shared/widgets/search_bar_widget.dart';
 import '../../../../shared/widgets/empty_state_widget.dart';
 import '../../../../core/usecases/base_usecase.dart';
@@ -75,7 +74,7 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
       final local = CategoryLocalDataSourceImpl(database: GetIt.instance<AppDatabase>());
       final repo = CategoryRepositoryImpl(localDataSource: local);
       if (isEdit) {
-        await repo.update(category!.id, {'name': nameController.text.trim(), 'description': descController.text.trim()});
+        await repo.update(category.id, {'name': nameController.text.trim(), 'description': descController.text.trim()});
       } else {
         await repo.create(CategoryEntity(
           id: const Uuid().v4(), name: nameController.text.trim(),

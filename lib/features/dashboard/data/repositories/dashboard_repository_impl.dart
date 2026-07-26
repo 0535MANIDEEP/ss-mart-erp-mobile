@@ -296,7 +296,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
       final sales = bills
           .map((db.Bill b) => RecentSale(
                 id: b.id,
-                billNumber: b.billNumber ?? '',
+                billNumber: b.billNumber,
                 customerName: b.customerName ?? '',
                 amount: b.totalAmount,
                 createdAt: b.createdAt,

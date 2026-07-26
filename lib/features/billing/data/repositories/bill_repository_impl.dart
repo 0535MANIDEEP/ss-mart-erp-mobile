@@ -5,7 +5,6 @@ import '../../../../core/error/failures.dart';
 import '../../domain/entities/bill_entity.dart';
 import '../../domain/repositories/bill_repository.dart';
 import '../datasources/bill_local_datasource.dart';
-import '../datasources/bill_remote_datasource.dart';
 import '../../../inventory/domain/repositories/stock_repository.dart';
 import '../../../loyalty/domain/repositories/loyalty_repository.dart';
 import '../../../sync/domain/repositories/sync_repository.dart';
@@ -66,7 +65,6 @@ import '../../../sync/domain/entities/sync_queue_entity.dart';
 ///   needed for server-side reconstruction.
 class BillRepositoryImpl implements BillRepository {
   final BillLocalDataSource _localDataSource;
-  final BillRemoteDataSource _remoteDataSource;
   final StockRepository _stockRepository;
   final LoyaltyRepository _loyaltyRepository;
   final SyncRepository _syncRepository;
@@ -74,12 +72,10 @@ class BillRepositoryImpl implements BillRepository {
 
   BillRepositoryImpl({
     required BillLocalDataSource localDataSource,
-    required BillRemoteDataSource remoteDataSource,
     required StockRepository stockRepository,
     required LoyaltyRepository loyaltyRepository,
     required SyncRepository syncRepository,
   })  : _localDataSource = localDataSource,
-        _remoteDataSource = remoteDataSource,
         _stockRepository = stockRepository,
         _loyaltyRepository = loyaltyRepository,
         _syncRepository = syncRepository;

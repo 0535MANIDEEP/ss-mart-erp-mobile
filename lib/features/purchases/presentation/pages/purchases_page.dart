@@ -69,7 +69,7 @@ class PurchasesPage extends StatelessWidget {
           onPressed: () async {
             final result = await Navigator.push<bool>(
               context,
-              MaterialPageRoute(
+              MaterialPageRoute<bool>(
                 builder: (_) => const PurchaseFormPage(),
               ),
             );
@@ -132,8 +132,8 @@ class PurchasesPage extends StatelessWidget {
             onTap: () async {
               final result = await Navigator.push<bool>(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => PurchaseDetailPage(purchase: purchase),
+MaterialPageRoute<bool>(
+                builder: (_) => PurchaseDetailPage(purchase: purchase),
                 ),
               );
               if (result == true && context.mounted) {
@@ -153,7 +153,7 @@ class PurchasesPage extends StatelessWidget {
 
     final suppliers = <String>['All Suppliers', 'Supplier A', 'Supplier B', 'Supplier C'];
 
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
@@ -190,7 +190,7 @@ class PurchasesPage extends StatelessWidget {
                 subtitle: Text(selectedSupplier ?? 'All Suppliers'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
-                  showDialog(
+                  showDialog<void>(
                     context: context,
                     builder: (ctx) => SimpleDialog(
                       title: const Text('Select Supplier'),

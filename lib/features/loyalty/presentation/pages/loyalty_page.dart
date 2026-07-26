@@ -181,7 +181,7 @@ class LoyaltyPage extends StatelessWidget {
 
   void _showEarnPointsDialog(BuildContext context) {
     final pointsController = TextEditingController();
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Earn Points'),
@@ -220,7 +220,7 @@ class LoyaltyPage extends StatelessWidget {
 
   void _showRedeemPointsDialog(BuildContext context, int maxPoints) {
     final pointsController = TextEditingController();
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Redeem Points'),

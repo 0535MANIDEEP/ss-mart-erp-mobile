@@ -74,7 +74,7 @@ class MainScaffold extends StatelessWidget {
   }
 
   void _showMoreMenu(BuildContext context) {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       builder: (context) => SafeArea(
         child: SingleChildScrollView(
