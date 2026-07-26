@@ -43,6 +43,15 @@ import '../features/import_export/presentation/pages/import_mapping_page.dart';
 import '../features/import_export/presentation/pages/import_preview_page.dart';
 import '../features/sync/presentation/pages/sync_page.dart';
 import '../features/sync/presentation/pages/sync_logs_page.dart';
+import '../features/labels/presentation/pages/labels_page.dart';
+import '../features/labels/presentation/pages/label_preview_page.dart';
+import '../features/challans/presentation/pages/challans_page.dart';
+import '../features/challans/presentation/pages/challan_form_page.dart';
+import '../features/challans/presentation/pages/challan_detail_page.dart';
+import '../features/accounting/presentation/pages/accounting_page.dart';
+import '../features/challans/domain/entities/delivery_challan.dart';
+import '../features/orders/presentation/pages/orders_page.dart';
+import '../features/orders/presentation/pages/order_detail_page.dart';
 import '../shared/widgets/main_scaffold.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -301,6 +310,16 @@ final GoRouter appRouter = GoRouter(
           builder: (context, state) => const SyncLogsPage(),
         ),
         GoRoute(
+          path: '/labels',
+          name: 'labels',
+          builder: (context, state) => const LabelsPage(),
+        ),
+        GoRoute(
+          path: '/labels/preview',
+          name: 'label-preview',
+          builder: (context, state) => const LabelPreviewPage(),
+        ),
+        GoRoute(
           path: '/barcode-scanner',
           name: 'barcode-scanner',
           builder: (context, state) => const BarcodeScannerPage(),
@@ -309,6 +328,60 @@ final GoRouter appRouter = GoRouter(
           path: '/settings/printer',
           name: 'printer-settings',
           builder: (context, state) => const PrinterSettingsPage(),
+        ),
+        GoRoute(
+          path: '/challans',
+          name: 'challans',
+          builder: (context, state) => const ChallansPage(),
+        ),
+        GoRoute(
+          path: '/challans/new',
+          name: 'challan-new',
+          builder: (context, state) => const ChallanFormPage(),
+        ),
+        GoRoute(
+          path: '/challans/:id',
+          name: 'challan-detail',
+          builder: (context, state) {
+            final challanId = state.pathParameters['id']!;
+            return ChallanDetailPage(
+              challan: DeliveryChallan(
+                id: challanId,
+                challanNumber: state.uri.queryParameters['number'] ?? 'N/A',
+                customerId: state.uri.queryParameters['customerId'] ?? '',
+                customerName: state.uri.queryParameters['customer'] ?? 'Customer',
+                challanDate: DateTime.now(),
+                vehicleNumber: state.uri.queryParameters['vehicle'] ?? '',
+                driverName: state.uri.queryParameters['driver'] ?? '',
+                driverPhone: state.uri.queryParameters['phone'] ?? '',
+                status: state.uri.queryParameters['status'] ?? 'pending',
+                createdAt: DateTime.now(),
+                updatedAt: DateTime.now(),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/accounting',
+          name: 'accounting',
+          builder: (context, state) => const AccountingPage(),
+        ),
+        GoRoute(
+          path: '/orders',
+          name: 'orders',
+          builder: (context, state) => const OrdersPage(),
+        ),
+        GoRoute(
+          path: '/orders/:orderId',
+          name: 'order-detail',
+          builder: (context, state) {
+            final orderId = state.pathParameters['orderId']!;
+            final orderType = state.uri.queryParameters['type'] ?? 'sales';
+            return OrderDetailPage(
+              orderId: orderId,
+              orderType: orderType,
+            );
+          },
         ),
       ],
     ),

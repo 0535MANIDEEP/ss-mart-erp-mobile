@@ -130,6 +130,30 @@ class MainScaffold extends StatelessWidget {
                 },
               ),
               ListTile(
+                leading: const Icon(Icons.local_shipping),
+                title: const Text('Challans'),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.go('/challans');
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.account_balance),
+                title: const Text('Accounting'),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.go('/accounting');
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.receipt_long),
+                title: const Text('Orders'),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.go('/orders');
+                },
+              ),
+              ListTile(
                 leading: const Icon(Icons.group),
                 title: const Text('Loyalty'),
                 onTap: () {
@@ -159,6 +183,14 @@ class MainScaffold extends StatelessWidget {
                 onTap: () {
                   Navigator.pop(context);
                   context.go('/sync');
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.label),
+                title: const Text('Labels'),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.go('/labels');
                 },
               ),
               ListTile(
