@@ -18,6 +18,9 @@ class BillingReady extends BillingState {
   final String? customerStateCode;
   final int subtotal;
   final int taxAmount;
+  final int cgstAmount;
+  final int sgstAmount;
+  final int igstAmount;
   final int discountAmount;
   final int roundOff;
   final int totalAmount;
@@ -31,6 +34,9 @@ class BillingReady extends BillingState {
     this.customerStateCode,
     this.subtotal = 0,
     this.taxAmount = 0,
+    this.cgstAmount = 0,
+    this.sgstAmount = 0,
+    this.igstAmount = 0,
     this.discountAmount = 0,
     this.roundOff = 0,
     this.totalAmount = 0,
@@ -59,6 +65,9 @@ class BillingReady extends BillingState {
     String? customerStateCode,
     int? subtotal,
     int? taxAmount,
+    int? cgstAmount,
+    int? sgstAmount,
+    int? igstAmount,
     int? discountAmount,
     int? roundOff,
     int? totalAmount,
@@ -72,6 +81,9 @@ class BillingReady extends BillingState {
       customerStateCode: customerStateCode ?? this.customerStateCode,
       subtotal: subtotal ?? this.subtotal,
       taxAmount: taxAmount ?? this.taxAmount,
+      cgstAmount: cgstAmount ?? this.cgstAmount,
+      sgstAmount: sgstAmount ?? this.sgstAmount,
+      igstAmount: igstAmount ?? this.igstAmount,
       discountAmount: discountAmount ?? this.discountAmount,
       roundOff: roundOff ?? this.roundOff,
       totalAmount: totalAmount ?? this.totalAmount,
@@ -83,7 +95,8 @@ class BillingReady extends BillingState {
   @override
   List<Object> get props => [
         items, customerId ?? '', customerName, customerStateCode ?? '',
-        subtotal, taxAmount, discountAmount, roundOff, totalAmount,
+        subtotal, taxAmount, cgstAmount, sgstAmount, igstAmount,
+        discountAmount, roundOff, totalAmount,
         billDiscountPercent, billDiscountAmount,
       ];
 }

@@ -2093,6 +2093,38 @@ class $BillsTable extends Bills with TableInfo<$BillsTable, Bill> {
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       defaultValue: const Constant(0));
+  static const VerificationMeta _cgstAmountMeta =
+      const VerificationMeta('cgstAmount');
+  @override
+  late final GeneratedColumn<int> cgstAmount = GeneratedColumn<int>(
+      'cgst_amount', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _sgstAmountMeta =
+      const VerificationMeta('sgstAmount');
+  @override
+  late final GeneratedColumn<int> sgstAmount = GeneratedColumn<int>(
+      'sgst_amount', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _igstAmountMeta =
+      const VerificationMeta('igstAmount');
+  @override
+  late final GeneratedColumn<int> igstAmount = GeneratedColumn<int>(
+      'igst_amount', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _taxRuleVersionMeta =
+      const VerificationMeta('taxRuleVersion');
+  @override
+  late final GeneratedColumn<String> taxRuleVersion = GeneratedColumn<String>(
+      'tax_rule_version', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('v1'));
   static const VerificationMeta _discountAmountMeta =
       const VerificationMeta('discountAmount');
   @override
@@ -2238,6 +2270,10 @@ class $BillsTable extends Bills with TableInfo<$BillsTable, Bill> {
         billDate,
         subtotal,
         taxAmount,
+        cgstAmount,
+        sgstAmount,
+        igstAmount,
+        taxRuleVersion,
         discountAmount,
         discount1,
         discount2,
@@ -2313,6 +2349,30 @@ class $BillsTable extends Bills with TableInfo<$BillsTable, Bill> {
     if (data.containsKey('tax_amount')) {
       context.handle(_taxAmountMeta,
           taxAmount.isAcceptableOrUnknown(data['tax_amount']!, _taxAmountMeta));
+    }
+    if (data.containsKey('cgst_amount')) {
+      context.handle(
+          _cgstAmountMeta,
+          cgstAmount.isAcceptableOrUnknown(
+              data['cgst_amount']!, _cgstAmountMeta));
+    }
+    if (data.containsKey('sgst_amount')) {
+      context.handle(
+          _sgstAmountMeta,
+          sgstAmount.isAcceptableOrUnknown(
+              data['sgst_amount']!, _sgstAmountMeta));
+    }
+    if (data.containsKey('igst_amount')) {
+      context.handle(
+          _igstAmountMeta,
+          igstAmount.isAcceptableOrUnknown(
+              data['igst_amount']!, _igstAmountMeta));
+    }
+    if (data.containsKey('tax_rule_version')) {
+      context.handle(
+          _taxRuleVersionMeta,
+          taxRuleVersion.isAcceptableOrUnknown(
+              data['tax_rule_version']!, _taxRuleVersionMeta));
     }
     if (data.containsKey('discount_amount')) {
       context.handle(
@@ -2431,6 +2491,14 @@ class $BillsTable extends Bills with TableInfo<$BillsTable, Bill> {
           .read(DriftSqlType.int, data['${effectivePrefix}subtotal'])!,
       taxAmount: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}tax_amount'])!,
+      cgstAmount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}cgst_amount'])!,
+      sgstAmount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}sgst_amount'])!,
+      igstAmount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}igst_amount'])!,
+      taxRuleVersion: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}tax_rule_version'])!,
       discountAmount: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}discount_amount'])!,
       discount1: attachedDatabase.typeMapping
@@ -2485,6 +2553,10 @@ class Bill extends DataClass implements Insertable<Bill> {
   final DateTime billDate;
   final int subtotal;
   final int taxAmount;
+  final int cgstAmount;
+  final int sgstAmount;
+  final int igstAmount;
+  final String taxRuleVersion;
   final int discountAmount;
   final double discount1;
   final double discount2;
@@ -2512,6 +2584,10 @@ class Bill extends DataClass implements Insertable<Bill> {
       required this.billDate,
       required this.subtotal,
       required this.taxAmount,
+      required this.cgstAmount,
+      required this.sgstAmount,
+      required this.igstAmount,
+      required this.taxRuleVersion,
       required this.discountAmount,
       required this.discount1,
       required this.discount2,
@@ -2547,6 +2623,10 @@ class Bill extends DataClass implements Insertable<Bill> {
     map['bill_date'] = Variable<DateTime>(billDate);
     map['subtotal'] = Variable<int>(subtotal);
     map['tax_amount'] = Variable<int>(taxAmount);
+    map['cgst_amount'] = Variable<int>(cgstAmount);
+    map['sgst_amount'] = Variable<int>(sgstAmount);
+    map['igst_amount'] = Variable<int>(igstAmount);
+    map['tax_rule_version'] = Variable<String>(taxRuleVersion);
     map['discount_amount'] = Variable<int>(discountAmount);
     map['discount1'] = Variable<double>(discount1);
     map['discount2'] = Variable<double>(discount2);
@@ -2586,6 +2666,10 @@ class Bill extends DataClass implements Insertable<Bill> {
       billDate: Value(billDate),
       subtotal: Value(subtotal),
       taxAmount: Value(taxAmount),
+      cgstAmount: Value(cgstAmount),
+      sgstAmount: Value(sgstAmount),
+      igstAmount: Value(igstAmount),
+      taxRuleVersion: Value(taxRuleVersion),
       discountAmount: Value(discountAmount),
       discount1: Value(discount1),
       discount2: Value(discount2),
@@ -2621,6 +2705,10 @@ class Bill extends DataClass implements Insertable<Bill> {
       billDate: serializer.fromJson<DateTime>(json['billDate']),
       subtotal: serializer.fromJson<int>(json['subtotal']),
       taxAmount: serializer.fromJson<int>(json['taxAmount']),
+      cgstAmount: serializer.fromJson<int>(json['cgstAmount']),
+      sgstAmount: serializer.fromJson<int>(json['sgstAmount']),
+      igstAmount: serializer.fromJson<int>(json['igstAmount']),
+      taxRuleVersion: serializer.fromJson<String>(json['taxRuleVersion']),
       discountAmount: serializer.fromJson<int>(json['discountAmount']),
       discount1: serializer.fromJson<double>(json['discount1']),
       discount2: serializer.fromJson<double>(json['discount2']),
@@ -2653,6 +2741,10 @@ class Bill extends DataClass implements Insertable<Bill> {
       'billDate': serializer.toJson<DateTime>(billDate),
       'subtotal': serializer.toJson<int>(subtotal),
       'taxAmount': serializer.toJson<int>(taxAmount),
+      'cgstAmount': serializer.toJson<int>(cgstAmount),
+      'sgstAmount': serializer.toJson<int>(sgstAmount),
+      'igstAmount': serializer.toJson<int>(igstAmount),
+      'taxRuleVersion': serializer.toJson<String>(taxRuleVersion),
       'discountAmount': serializer.toJson<int>(discountAmount),
       'discount1': serializer.toJson<double>(discount1),
       'discount2': serializer.toJson<double>(discount2),
@@ -2683,6 +2775,10 @@ class Bill extends DataClass implements Insertable<Bill> {
           DateTime? billDate,
           int? subtotal,
           int? taxAmount,
+          int? cgstAmount,
+          int? sgstAmount,
+          int? igstAmount,
+          String? taxRuleVersion,
           int? discountAmount,
           double? discount1,
           double? discount2,
@@ -2712,6 +2808,10 @@ class Bill extends DataClass implements Insertable<Bill> {
         billDate: billDate ?? this.billDate,
         subtotal: subtotal ?? this.subtotal,
         taxAmount: taxAmount ?? this.taxAmount,
+        cgstAmount: cgstAmount ?? this.cgstAmount,
+        sgstAmount: sgstAmount ?? this.sgstAmount,
+        igstAmount: igstAmount ?? this.igstAmount,
+        taxRuleVersion: taxRuleVersion ?? this.taxRuleVersion,
         discountAmount: discountAmount ?? this.discountAmount,
         discount1: discount1 ?? this.discount1,
         discount2: discount2 ?? this.discount2,
@@ -2749,6 +2849,15 @@ class Bill extends DataClass implements Insertable<Bill> {
       billDate: data.billDate.present ? data.billDate.value : this.billDate,
       subtotal: data.subtotal.present ? data.subtotal.value : this.subtotal,
       taxAmount: data.taxAmount.present ? data.taxAmount.value : this.taxAmount,
+      cgstAmount:
+          data.cgstAmount.present ? data.cgstAmount.value : this.cgstAmount,
+      sgstAmount:
+          data.sgstAmount.present ? data.sgstAmount.value : this.sgstAmount,
+      igstAmount:
+          data.igstAmount.present ? data.igstAmount.value : this.igstAmount,
+      taxRuleVersion: data.taxRuleVersion.present
+          ? data.taxRuleVersion.value
+          : this.taxRuleVersion,
       discountAmount: data.discountAmount.present
           ? data.discountAmount.value
           : this.discountAmount,
@@ -2789,6 +2898,10 @@ class Bill extends DataClass implements Insertable<Bill> {
           ..write('billDate: $billDate, ')
           ..write('subtotal: $subtotal, ')
           ..write('taxAmount: $taxAmount, ')
+          ..write('cgstAmount: $cgstAmount, ')
+          ..write('sgstAmount: $sgstAmount, ')
+          ..write('igstAmount: $igstAmount, ')
+          ..write('taxRuleVersion: $taxRuleVersion, ')
           ..write('discountAmount: $discountAmount, ')
           ..write('discount1: $discount1, ')
           ..write('discount2: $discount2, ')
@@ -2821,6 +2934,10 @@ class Bill extends DataClass implements Insertable<Bill> {
         billDate,
         subtotal,
         taxAmount,
+        cgstAmount,
+        sgstAmount,
+        igstAmount,
+        taxRuleVersion,
         discountAmount,
         discount1,
         discount2,
@@ -2852,6 +2969,10 @@ class Bill extends DataClass implements Insertable<Bill> {
           other.billDate == this.billDate &&
           other.subtotal == this.subtotal &&
           other.taxAmount == this.taxAmount &&
+          other.cgstAmount == this.cgstAmount &&
+          other.sgstAmount == this.sgstAmount &&
+          other.igstAmount == this.igstAmount &&
+          other.taxRuleVersion == this.taxRuleVersion &&
           other.discountAmount == this.discountAmount &&
           other.discount1 == this.discount1 &&
           other.discount2 == this.discount2 &&
@@ -2881,6 +3002,10 @@ class BillsCompanion extends UpdateCompanion<Bill> {
   final Value<DateTime> billDate;
   final Value<int> subtotal;
   final Value<int> taxAmount;
+  final Value<int> cgstAmount;
+  final Value<int> sgstAmount;
+  final Value<int> igstAmount;
+  final Value<String> taxRuleVersion;
   final Value<int> discountAmount;
   final Value<double> discount1;
   final Value<double> discount2;
@@ -2909,6 +3034,10 @@ class BillsCompanion extends UpdateCompanion<Bill> {
     this.billDate = const Value.absent(),
     this.subtotal = const Value.absent(),
     this.taxAmount = const Value.absent(),
+    this.cgstAmount = const Value.absent(),
+    this.sgstAmount = const Value.absent(),
+    this.igstAmount = const Value.absent(),
+    this.taxRuleVersion = const Value.absent(),
     this.discountAmount = const Value.absent(),
     this.discount1 = const Value.absent(),
     this.discount2 = const Value.absent(),
@@ -2938,6 +3067,10 @@ class BillsCompanion extends UpdateCompanion<Bill> {
     required DateTime billDate,
     required int subtotal,
     this.taxAmount = const Value.absent(),
+    this.cgstAmount = const Value.absent(),
+    this.sgstAmount = const Value.absent(),
+    this.igstAmount = const Value.absent(),
+    this.taxRuleVersion = const Value.absent(),
     this.discountAmount = const Value.absent(),
     this.discount1 = const Value.absent(),
     this.discount2 = const Value.absent(),
@@ -2974,6 +3107,10 @@ class BillsCompanion extends UpdateCompanion<Bill> {
     Expression<DateTime>? billDate,
     Expression<int>? subtotal,
     Expression<int>? taxAmount,
+    Expression<int>? cgstAmount,
+    Expression<int>? sgstAmount,
+    Expression<int>? igstAmount,
+    Expression<String>? taxRuleVersion,
     Expression<int>? discountAmount,
     Expression<double>? discount1,
     Expression<double>? discount2,
@@ -3003,6 +3140,10 @@ class BillsCompanion extends UpdateCompanion<Bill> {
       if (billDate != null) 'bill_date': billDate,
       if (subtotal != null) 'subtotal': subtotal,
       if (taxAmount != null) 'tax_amount': taxAmount,
+      if (cgstAmount != null) 'cgst_amount': cgstAmount,
+      if (sgstAmount != null) 'sgst_amount': sgstAmount,
+      if (igstAmount != null) 'igst_amount': igstAmount,
+      if (taxRuleVersion != null) 'tax_rule_version': taxRuleVersion,
       if (discountAmount != null) 'discount_amount': discountAmount,
       if (discount1 != null) 'discount1': discount1,
       if (discount2 != null) 'discount2': discount2,
@@ -3034,6 +3175,10 @@ class BillsCompanion extends UpdateCompanion<Bill> {
       Value<DateTime>? billDate,
       Value<int>? subtotal,
       Value<int>? taxAmount,
+      Value<int>? cgstAmount,
+      Value<int>? sgstAmount,
+      Value<int>? igstAmount,
+      Value<String>? taxRuleVersion,
       Value<int>? discountAmount,
       Value<double>? discount1,
       Value<double>? discount2,
@@ -3062,6 +3207,10 @@ class BillsCompanion extends UpdateCompanion<Bill> {
       billDate: billDate ?? this.billDate,
       subtotal: subtotal ?? this.subtotal,
       taxAmount: taxAmount ?? this.taxAmount,
+      cgstAmount: cgstAmount ?? this.cgstAmount,
+      sgstAmount: sgstAmount ?? this.sgstAmount,
+      igstAmount: igstAmount ?? this.igstAmount,
+      taxRuleVersion: taxRuleVersion ?? this.taxRuleVersion,
       discountAmount: discountAmount ?? this.discountAmount,
       discount1: discount1 ?? this.discount1,
       discount2: discount2 ?? this.discount2,
@@ -3110,6 +3259,18 @@ class BillsCompanion extends UpdateCompanion<Bill> {
     }
     if (taxAmount.present) {
       map['tax_amount'] = Variable<int>(taxAmount.value);
+    }
+    if (cgstAmount.present) {
+      map['cgst_amount'] = Variable<int>(cgstAmount.value);
+    }
+    if (sgstAmount.present) {
+      map['sgst_amount'] = Variable<int>(sgstAmount.value);
+    }
+    if (igstAmount.present) {
+      map['igst_amount'] = Variable<int>(igstAmount.value);
+    }
+    if (taxRuleVersion.present) {
+      map['tax_rule_version'] = Variable<String>(taxRuleVersion.value);
     }
     if (discountAmount.present) {
       map['discount_amount'] = Variable<int>(discountAmount.value);
@@ -3182,6 +3343,10 @@ class BillsCompanion extends UpdateCompanion<Bill> {
           ..write('billDate: $billDate, ')
           ..write('subtotal: $subtotal, ')
           ..write('taxAmount: $taxAmount, ')
+          ..write('cgstAmount: $cgstAmount, ')
+          ..write('sgstAmount: $sgstAmount, ')
+          ..write('igstAmount: $igstAmount, ')
+          ..write('taxRuleVersion: $taxRuleVersion, ')
           ..write('discountAmount: $discountAmount, ')
           ..write('discount1: $discount1, ')
           ..write('discount2: $discount2, ')
@@ -3294,6 +3459,38 @@ class $BillItemsTable extends BillItems
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       defaultValue: const Constant(0));
+  static const VerificationMeta _cgstAmountMeta =
+      const VerificationMeta('cgstAmount');
+  @override
+  late final GeneratedColumn<int> cgstAmount = GeneratedColumn<int>(
+      'cgst_amount', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _sgstAmountMeta =
+      const VerificationMeta('sgstAmount');
+  @override
+  late final GeneratedColumn<int> sgstAmount = GeneratedColumn<int>(
+      'sgst_amount', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _igstAmountMeta =
+      const VerificationMeta('igstAmount');
+  @override
+  late final GeneratedColumn<int> igstAmount = GeneratedColumn<int>(
+      'igst_amount', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _taxRuleVersionMeta =
+      const VerificationMeta('taxRuleVersion');
+  @override
+  late final GeneratedColumn<String> taxRuleVersion = GeneratedColumn<String>(
+      'tax_rule_version', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('v1'));
   static const VerificationMeta _totalAmountMeta =
       const VerificationMeta('totalAmount');
   @override
@@ -3320,6 +3517,10 @@ class $BillItemsTable extends BillItems
         discount2,
         discountAmount,
         taxAmount,
+        cgstAmount,
+        sgstAmount,
+        igstAmount,
+        taxRuleVersion,
         totalAmount,
         batchNumber
       ];
@@ -3398,6 +3599,30 @@ class $BillItemsTable extends BillItems
       context.handle(_taxAmountMeta,
           taxAmount.isAcceptableOrUnknown(data['tax_amount']!, _taxAmountMeta));
     }
+    if (data.containsKey('cgst_amount')) {
+      context.handle(
+          _cgstAmountMeta,
+          cgstAmount.isAcceptableOrUnknown(
+              data['cgst_amount']!, _cgstAmountMeta));
+    }
+    if (data.containsKey('sgst_amount')) {
+      context.handle(
+          _sgstAmountMeta,
+          sgstAmount.isAcceptableOrUnknown(
+              data['sgst_amount']!, _sgstAmountMeta));
+    }
+    if (data.containsKey('igst_amount')) {
+      context.handle(
+          _igstAmountMeta,
+          igstAmount.isAcceptableOrUnknown(
+              data['igst_amount']!, _igstAmountMeta));
+    }
+    if (data.containsKey('tax_rule_version')) {
+      context.handle(
+          _taxRuleVersionMeta,
+          taxRuleVersion.isAcceptableOrUnknown(
+              data['tax_rule_version']!, _taxRuleVersionMeta));
+    }
     if (data.containsKey('total_amount')) {
       context.handle(
           _totalAmountMeta,
@@ -3445,6 +3670,14 @@ class $BillItemsTable extends BillItems
           .read(DriftSqlType.int, data['${effectivePrefix}discount_amount'])!,
       taxAmount: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}tax_amount'])!,
+      cgstAmount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}cgst_amount'])!,
+      sgstAmount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}sgst_amount'])!,
+      igstAmount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}igst_amount'])!,
+      taxRuleVersion: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}tax_rule_version'])!,
       totalAmount: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}total_amount'])!,
       batchNumber: attachedDatabase.typeMapping
@@ -3471,6 +3704,10 @@ class BillItem extends DataClass implements Insertable<BillItem> {
   final double discount2;
   final int discountAmount;
   final int taxAmount;
+  final int cgstAmount;
+  final int sgstAmount;
+  final int igstAmount;
+  final String taxRuleVersion;
   final int totalAmount;
   final String? batchNumber;
   const BillItem(
@@ -3486,6 +3723,10 @@ class BillItem extends DataClass implements Insertable<BillItem> {
       required this.discount2,
       required this.discountAmount,
       required this.taxAmount,
+      required this.cgstAmount,
+      required this.sgstAmount,
+      required this.igstAmount,
+      required this.taxRuleVersion,
       required this.totalAmount,
       this.batchNumber});
   @override
@@ -3503,6 +3744,10 @@ class BillItem extends DataClass implements Insertable<BillItem> {
     map['discount2'] = Variable<double>(discount2);
     map['discount_amount'] = Variable<int>(discountAmount);
     map['tax_amount'] = Variable<int>(taxAmount);
+    map['cgst_amount'] = Variable<int>(cgstAmount);
+    map['sgst_amount'] = Variable<int>(sgstAmount);
+    map['igst_amount'] = Variable<int>(igstAmount);
+    map['tax_rule_version'] = Variable<String>(taxRuleVersion);
     map['total_amount'] = Variable<int>(totalAmount);
     if (!nullToAbsent || batchNumber != null) {
       map['batch_number'] = Variable<String>(batchNumber);
@@ -3524,6 +3769,10 @@ class BillItem extends DataClass implements Insertable<BillItem> {
       discount2: Value(discount2),
       discountAmount: Value(discountAmount),
       taxAmount: Value(taxAmount),
+      cgstAmount: Value(cgstAmount),
+      sgstAmount: Value(sgstAmount),
+      igstAmount: Value(igstAmount),
+      taxRuleVersion: Value(taxRuleVersion),
       totalAmount: Value(totalAmount),
       batchNumber: batchNumber == null && nullToAbsent
           ? const Value.absent()
@@ -3547,6 +3796,10 @@ class BillItem extends DataClass implements Insertable<BillItem> {
       discount2: serializer.fromJson<double>(json['discount2']),
       discountAmount: serializer.fromJson<int>(json['discountAmount']),
       taxAmount: serializer.fromJson<int>(json['taxAmount']),
+      cgstAmount: serializer.fromJson<int>(json['cgstAmount']),
+      sgstAmount: serializer.fromJson<int>(json['sgstAmount']),
+      igstAmount: serializer.fromJson<int>(json['igstAmount']),
+      taxRuleVersion: serializer.fromJson<String>(json['taxRuleVersion']),
       totalAmount: serializer.fromJson<int>(json['totalAmount']),
       batchNumber: serializer.fromJson<String?>(json['batchNumber']),
     );
@@ -3567,6 +3820,10 @@ class BillItem extends DataClass implements Insertable<BillItem> {
       'discount2': serializer.toJson<double>(discount2),
       'discountAmount': serializer.toJson<int>(discountAmount),
       'taxAmount': serializer.toJson<int>(taxAmount),
+      'cgstAmount': serializer.toJson<int>(cgstAmount),
+      'sgstAmount': serializer.toJson<int>(sgstAmount),
+      'igstAmount': serializer.toJson<int>(igstAmount),
+      'taxRuleVersion': serializer.toJson<String>(taxRuleVersion),
       'totalAmount': serializer.toJson<int>(totalAmount),
       'batchNumber': serializer.toJson<String?>(batchNumber),
     };
@@ -3585,6 +3842,10 @@ class BillItem extends DataClass implements Insertable<BillItem> {
           double? discount2,
           int? discountAmount,
           int? taxAmount,
+          int? cgstAmount,
+          int? sgstAmount,
+          int? igstAmount,
+          String? taxRuleVersion,
           int? totalAmount,
           Value<String?> batchNumber = const Value.absent()}) =>
       BillItem(
@@ -3600,6 +3861,10 @@ class BillItem extends DataClass implements Insertable<BillItem> {
         discount2: discount2 ?? this.discount2,
         discountAmount: discountAmount ?? this.discountAmount,
         taxAmount: taxAmount ?? this.taxAmount,
+        cgstAmount: cgstAmount ?? this.cgstAmount,
+        sgstAmount: sgstAmount ?? this.sgstAmount,
+        igstAmount: igstAmount ?? this.igstAmount,
+        taxRuleVersion: taxRuleVersion ?? this.taxRuleVersion,
         totalAmount: totalAmount ?? this.totalAmount,
         batchNumber: batchNumber.present ? batchNumber.value : this.batchNumber,
       );
@@ -3622,6 +3887,15 @@ class BillItem extends DataClass implements Insertable<BillItem> {
           ? data.discountAmount.value
           : this.discountAmount,
       taxAmount: data.taxAmount.present ? data.taxAmount.value : this.taxAmount,
+      cgstAmount:
+          data.cgstAmount.present ? data.cgstAmount.value : this.cgstAmount,
+      sgstAmount:
+          data.sgstAmount.present ? data.sgstAmount.value : this.sgstAmount,
+      igstAmount:
+          data.igstAmount.present ? data.igstAmount.value : this.igstAmount,
+      taxRuleVersion: data.taxRuleVersion.present
+          ? data.taxRuleVersion.value
+          : this.taxRuleVersion,
       totalAmount:
           data.totalAmount.present ? data.totalAmount.value : this.totalAmount,
       batchNumber:
@@ -3644,6 +3918,10 @@ class BillItem extends DataClass implements Insertable<BillItem> {
           ..write('discount2: $discount2, ')
           ..write('discountAmount: $discountAmount, ')
           ..write('taxAmount: $taxAmount, ')
+          ..write('cgstAmount: $cgstAmount, ')
+          ..write('sgstAmount: $sgstAmount, ')
+          ..write('igstAmount: $igstAmount, ')
+          ..write('taxRuleVersion: $taxRuleVersion, ')
           ..write('totalAmount: $totalAmount, ')
           ..write('batchNumber: $batchNumber')
           ..write(')'))
@@ -3664,6 +3942,10 @@ class BillItem extends DataClass implements Insertable<BillItem> {
       discount2,
       discountAmount,
       taxAmount,
+      cgstAmount,
+      sgstAmount,
+      igstAmount,
+      taxRuleVersion,
       totalAmount,
       batchNumber);
   @override
@@ -3682,6 +3964,10 @@ class BillItem extends DataClass implements Insertable<BillItem> {
           other.discount2 == this.discount2 &&
           other.discountAmount == this.discountAmount &&
           other.taxAmount == this.taxAmount &&
+          other.cgstAmount == this.cgstAmount &&
+          other.sgstAmount == this.sgstAmount &&
+          other.igstAmount == this.igstAmount &&
+          other.taxRuleVersion == this.taxRuleVersion &&
           other.totalAmount == this.totalAmount &&
           other.batchNumber == this.batchNumber);
 }
@@ -3699,6 +3985,10 @@ class BillItemsCompanion extends UpdateCompanion<BillItem> {
   final Value<double> discount2;
   final Value<int> discountAmount;
   final Value<int> taxAmount;
+  final Value<int> cgstAmount;
+  final Value<int> sgstAmount;
+  final Value<int> igstAmount;
+  final Value<String> taxRuleVersion;
   final Value<int> totalAmount;
   final Value<String?> batchNumber;
   final Value<int> rowid;
@@ -3715,6 +4005,10 @@ class BillItemsCompanion extends UpdateCompanion<BillItem> {
     this.discount2 = const Value.absent(),
     this.discountAmount = const Value.absent(),
     this.taxAmount = const Value.absent(),
+    this.cgstAmount = const Value.absent(),
+    this.sgstAmount = const Value.absent(),
+    this.igstAmount = const Value.absent(),
+    this.taxRuleVersion = const Value.absent(),
     this.totalAmount = const Value.absent(),
     this.batchNumber = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -3732,6 +4026,10 @@ class BillItemsCompanion extends UpdateCompanion<BillItem> {
     this.discount2 = const Value.absent(),
     this.discountAmount = const Value.absent(),
     this.taxAmount = const Value.absent(),
+    this.cgstAmount = const Value.absent(),
+    this.sgstAmount = const Value.absent(),
+    this.igstAmount = const Value.absent(),
+    this.taxRuleVersion = const Value.absent(),
     required int totalAmount,
     this.batchNumber = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -3755,6 +4053,10 @@ class BillItemsCompanion extends UpdateCompanion<BillItem> {
     Expression<double>? discount2,
     Expression<int>? discountAmount,
     Expression<int>? taxAmount,
+    Expression<int>? cgstAmount,
+    Expression<int>? sgstAmount,
+    Expression<int>? igstAmount,
+    Expression<String>? taxRuleVersion,
     Expression<int>? totalAmount,
     Expression<String>? batchNumber,
     Expression<int>? rowid,
@@ -3772,6 +4074,10 @@ class BillItemsCompanion extends UpdateCompanion<BillItem> {
       if (discount2 != null) 'discount2': discount2,
       if (discountAmount != null) 'discount_amount': discountAmount,
       if (taxAmount != null) 'tax_amount': taxAmount,
+      if (cgstAmount != null) 'cgst_amount': cgstAmount,
+      if (sgstAmount != null) 'sgst_amount': sgstAmount,
+      if (igstAmount != null) 'igst_amount': igstAmount,
+      if (taxRuleVersion != null) 'tax_rule_version': taxRuleVersion,
       if (totalAmount != null) 'total_amount': totalAmount,
       if (batchNumber != null) 'batch_number': batchNumber,
       if (rowid != null) 'rowid': rowid,
@@ -3791,6 +4097,10 @@ class BillItemsCompanion extends UpdateCompanion<BillItem> {
       Value<double>? discount2,
       Value<int>? discountAmount,
       Value<int>? taxAmount,
+      Value<int>? cgstAmount,
+      Value<int>? sgstAmount,
+      Value<int>? igstAmount,
+      Value<String>? taxRuleVersion,
       Value<int>? totalAmount,
       Value<String?>? batchNumber,
       Value<int>? rowid}) {
@@ -3807,6 +4117,10 @@ class BillItemsCompanion extends UpdateCompanion<BillItem> {
       discount2: discount2 ?? this.discount2,
       discountAmount: discountAmount ?? this.discountAmount,
       taxAmount: taxAmount ?? this.taxAmount,
+      cgstAmount: cgstAmount ?? this.cgstAmount,
+      sgstAmount: sgstAmount ?? this.sgstAmount,
+      igstAmount: igstAmount ?? this.igstAmount,
+      taxRuleVersion: taxRuleVersion ?? this.taxRuleVersion,
       totalAmount: totalAmount ?? this.totalAmount,
       batchNumber: batchNumber ?? this.batchNumber,
       rowid: rowid ?? this.rowid,
@@ -3852,6 +4166,18 @@ class BillItemsCompanion extends UpdateCompanion<BillItem> {
     if (taxAmount.present) {
       map['tax_amount'] = Variable<int>(taxAmount.value);
     }
+    if (cgstAmount.present) {
+      map['cgst_amount'] = Variable<int>(cgstAmount.value);
+    }
+    if (sgstAmount.present) {
+      map['sgst_amount'] = Variable<int>(sgstAmount.value);
+    }
+    if (igstAmount.present) {
+      map['igst_amount'] = Variable<int>(igstAmount.value);
+    }
+    if (taxRuleVersion.present) {
+      map['tax_rule_version'] = Variable<String>(taxRuleVersion.value);
+    }
     if (totalAmount.present) {
       map['total_amount'] = Variable<int>(totalAmount.value);
     }
@@ -3879,6 +4205,10 @@ class BillItemsCompanion extends UpdateCompanion<BillItem> {
           ..write('discount2: $discount2, ')
           ..write('discountAmount: $discountAmount, ')
           ..write('taxAmount: $taxAmount, ')
+          ..write('cgstAmount: $cgstAmount, ')
+          ..write('sgstAmount: $sgstAmount, ')
+          ..write('igstAmount: $igstAmount, ')
+          ..write('taxRuleVersion: $taxRuleVersion, ')
           ..write('totalAmount: $totalAmount, ')
           ..write('batchNumber: $batchNumber, ')
           ..write('rowid: $rowid')
@@ -28555,6 +28885,10 @@ typedef $$BillsTableCreateCompanionBuilder = BillsCompanion Function({
   required DateTime billDate,
   required int subtotal,
   Value<int> taxAmount,
+  Value<int> cgstAmount,
+  Value<int> sgstAmount,
+  Value<int> igstAmount,
+  Value<String> taxRuleVersion,
   Value<int> discountAmount,
   Value<double> discount1,
   Value<double> discount2,
@@ -28584,6 +28918,10 @@ typedef $$BillsTableUpdateCompanionBuilder = BillsCompanion Function({
   Value<DateTime> billDate,
   Value<int> subtotal,
   Value<int> taxAmount,
+  Value<int> cgstAmount,
+  Value<int> sgstAmount,
+  Value<int> igstAmount,
+  Value<String> taxRuleVersion,
   Value<int> discountAmount,
   Value<double> discount1,
   Value<double> discount2,
@@ -28636,6 +28974,19 @@ class $$BillsTableFilterComposer extends Composer<_$AppDatabase, $BillsTable> {
 
   ColumnFilters<int> get taxAmount => $composableBuilder(
       column: $table.taxAmount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get cgstAmount => $composableBuilder(
+      column: $table.cgstAmount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get sgstAmount => $composableBuilder(
+      column: $table.sgstAmount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get igstAmount => $composableBuilder(
+      column: $table.igstAmount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get taxRuleVersion => $composableBuilder(
+      column: $table.taxRuleVersion,
+      builder: (column) => ColumnFilters(column));
 
   ColumnFilters<int> get discountAmount => $composableBuilder(
       column: $table.discountAmount,
@@ -28729,6 +29080,19 @@ class $$BillsTableOrderingComposer
   ColumnOrderings<int> get taxAmount => $composableBuilder(
       column: $table.taxAmount, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<int> get cgstAmount => $composableBuilder(
+      column: $table.cgstAmount, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get sgstAmount => $composableBuilder(
+      column: $table.sgstAmount, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get igstAmount => $composableBuilder(
+      column: $table.igstAmount, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get taxRuleVersion => $composableBuilder(
+      column: $table.taxRuleVersion,
+      builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<int> get discountAmount => $composableBuilder(
       column: $table.discountAmount,
       builder: (column) => ColumnOrderings(column));
@@ -28819,6 +29183,18 @@ class $$BillsTableAnnotationComposer
   GeneratedColumn<int> get taxAmount =>
       $composableBuilder(column: $table.taxAmount, builder: (column) => column);
 
+  GeneratedColumn<int> get cgstAmount => $composableBuilder(
+      column: $table.cgstAmount, builder: (column) => column);
+
+  GeneratedColumn<int> get sgstAmount => $composableBuilder(
+      column: $table.sgstAmount, builder: (column) => column);
+
+  GeneratedColumn<int> get igstAmount => $composableBuilder(
+      column: $table.igstAmount, builder: (column) => column);
+
+  GeneratedColumn<String> get taxRuleVersion => $composableBuilder(
+      column: $table.taxRuleVersion, builder: (column) => column);
+
   GeneratedColumn<int> get discountAmount => $composableBuilder(
       column: $table.discountAmount, builder: (column) => column);
 
@@ -28905,6 +29281,10 @@ class $$BillsTableTableManager extends RootTableManager<
             Value<DateTime> billDate = const Value.absent(),
             Value<int> subtotal = const Value.absent(),
             Value<int> taxAmount = const Value.absent(),
+            Value<int> cgstAmount = const Value.absent(),
+            Value<int> sgstAmount = const Value.absent(),
+            Value<int> igstAmount = const Value.absent(),
+            Value<String> taxRuleVersion = const Value.absent(),
             Value<int> discountAmount = const Value.absent(),
             Value<double> discount1 = const Value.absent(),
             Value<double> discount2 = const Value.absent(),
@@ -28934,6 +29314,10 @@ class $$BillsTableTableManager extends RootTableManager<
             billDate: billDate,
             subtotal: subtotal,
             taxAmount: taxAmount,
+            cgstAmount: cgstAmount,
+            sgstAmount: sgstAmount,
+            igstAmount: igstAmount,
+            taxRuleVersion: taxRuleVersion,
             discountAmount: discountAmount,
             discount1: discount1,
             discount2: discount2,
@@ -28963,6 +29347,10 @@ class $$BillsTableTableManager extends RootTableManager<
             required DateTime billDate,
             required int subtotal,
             Value<int> taxAmount = const Value.absent(),
+            Value<int> cgstAmount = const Value.absent(),
+            Value<int> sgstAmount = const Value.absent(),
+            Value<int> igstAmount = const Value.absent(),
+            Value<String> taxRuleVersion = const Value.absent(),
             Value<int> discountAmount = const Value.absent(),
             Value<double> discount1 = const Value.absent(),
             Value<double> discount2 = const Value.absent(),
@@ -28992,6 +29380,10 @@ class $$BillsTableTableManager extends RootTableManager<
             billDate: billDate,
             subtotal: subtotal,
             taxAmount: taxAmount,
+            cgstAmount: cgstAmount,
+            sgstAmount: sgstAmount,
+            igstAmount: igstAmount,
+            taxRuleVersion: taxRuleVersion,
             discountAmount: discountAmount,
             discount1: discount1,
             discount2: discount2,
@@ -29044,6 +29436,10 @@ typedef $$BillItemsTableCreateCompanionBuilder = BillItemsCompanion Function({
   Value<double> discount2,
   Value<int> discountAmount,
   Value<int> taxAmount,
+  Value<int> cgstAmount,
+  Value<int> sgstAmount,
+  Value<int> igstAmount,
+  Value<String> taxRuleVersion,
   required int totalAmount,
   Value<String?> batchNumber,
   Value<int> rowid,
@@ -29061,6 +29457,10 @@ typedef $$BillItemsTableUpdateCompanionBuilder = BillItemsCompanion Function({
   Value<double> discount2,
   Value<int> discountAmount,
   Value<int> taxAmount,
+  Value<int> cgstAmount,
+  Value<int> sgstAmount,
+  Value<int> igstAmount,
+  Value<String> taxRuleVersion,
   Value<int> totalAmount,
   Value<String?> batchNumber,
   Value<int> rowid,
@@ -29112,6 +29512,19 @@ class $$BillItemsTableFilterComposer
 
   ColumnFilters<int> get taxAmount => $composableBuilder(
       column: $table.taxAmount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get cgstAmount => $composableBuilder(
+      column: $table.cgstAmount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get sgstAmount => $composableBuilder(
+      column: $table.sgstAmount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get igstAmount => $composableBuilder(
+      column: $table.igstAmount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get taxRuleVersion => $composableBuilder(
+      column: $table.taxRuleVersion,
+      builder: (column) => ColumnFilters(column));
 
   ColumnFilters<int> get totalAmount => $composableBuilder(
       column: $table.totalAmount, builder: (column) => ColumnFilters(column));
@@ -29167,6 +29580,19 @@ class $$BillItemsTableOrderingComposer
   ColumnOrderings<int> get taxAmount => $composableBuilder(
       column: $table.taxAmount, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<int> get cgstAmount => $composableBuilder(
+      column: $table.cgstAmount, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get sgstAmount => $composableBuilder(
+      column: $table.sgstAmount, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get igstAmount => $composableBuilder(
+      column: $table.igstAmount, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get taxRuleVersion => $composableBuilder(
+      column: $table.taxRuleVersion,
+      builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<int> get totalAmount => $composableBuilder(
       column: $table.totalAmount, builder: (column) => ColumnOrderings(column));
 
@@ -29219,6 +29645,18 @@ class $$BillItemsTableAnnotationComposer
   GeneratedColumn<int> get taxAmount =>
       $composableBuilder(column: $table.taxAmount, builder: (column) => column);
 
+  GeneratedColumn<int> get cgstAmount => $composableBuilder(
+      column: $table.cgstAmount, builder: (column) => column);
+
+  GeneratedColumn<int> get sgstAmount => $composableBuilder(
+      column: $table.sgstAmount, builder: (column) => column);
+
+  GeneratedColumn<int> get igstAmount => $composableBuilder(
+      column: $table.igstAmount, builder: (column) => column);
+
+  GeneratedColumn<String> get taxRuleVersion => $composableBuilder(
+      column: $table.taxRuleVersion, builder: (column) => column);
+
   GeneratedColumn<int> get totalAmount => $composableBuilder(
       column: $table.totalAmount, builder: (column) => column);
 
@@ -29261,6 +29699,10 @@ class $$BillItemsTableTableManager extends RootTableManager<
             Value<double> discount2 = const Value.absent(),
             Value<int> discountAmount = const Value.absent(),
             Value<int> taxAmount = const Value.absent(),
+            Value<int> cgstAmount = const Value.absent(),
+            Value<int> sgstAmount = const Value.absent(),
+            Value<int> igstAmount = const Value.absent(),
+            Value<String> taxRuleVersion = const Value.absent(),
             Value<int> totalAmount = const Value.absent(),
             Value<String?> batchNumber = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -29278,6 +29720,10 @@ class $$BillItemsTableTableManager extends RootTableManager<
             discount2: discount2,
             discountAmount: discountAmount,
             taxAmount: taxAmount,
+            cgstAmount: cgstAmount,
+            sgstAmount: sgstAmount,
+            igstAmount: igstAmount,
+            taxRuleVersion: taxRuleVersion,
             totalAmount: totalAmount,
             batchNumber: batchNumber,
             rowid: rowid,
@@ -29295,6 +29741,10 @@ class $$BillItemsTableTableManager extends RootTableManager<
             Value<double> discount2 = const Value.absent(),
             Value<int> discountAmount = const Value.absent(),
             Value<int> taxAmount = const Value.absent(),
+            Value<int> cgstAmount = const Value.absent(),
+            Value<int> sgstAmount = const Value.absent(),
+            Value<int> igstAmount = const Value.absent(),
+            Value<String> taxRuleVersion = const Value.absent(),
             required int totalAmount,
             Value<String?> batchNumber = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -29312,6 +29762,10 @@ class $$BillItemsTableTableManager extends RootTableManager<
             discount2: discount2,
             discountAmount: discountAmount,
             taxAmount: taxAmount,
+            cgstAmount: cgstAmount,
+            sgstAmount: sgstAmount,
+            igstAmount: igstAmount,
+            taxRuleVersion: taxRuleVersion,
             totalAmount: totalAmount,
             batchNumber: batchNumber,
             rowid: rowid,

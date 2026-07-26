@@ -26,6 +26,10 @@ class CreateBillUseCase extends UseCase<Bill, CreateBillParams> {
       billDate: DateTime.now(),
       subtotal: params.subtotal,
       taxAmount: params.taxAmount,
+      cgstAmount: params.cgstAmount,
+      sgstAmount: params.sgstAmount,
+      igstAmount: params.igstAmount,
+      taxRuleVersion: params.taxRuleVersion,
       discountAmount: params.discountAmount,
       roundOff: params.roundOff,
       totalAmount: params.totalAmount,
@@ -47,6 +51,10 @@ class CreateBillParams {
   final String? customerName;
   final int subtotal;
   final int taxAmount;
+  final int cgstAmount;
+  final int sgstAmount;
+  final int igstAmount;
+  final String taxRuleVersion;
   final int discountAmount;
   final int roundOff;
   final int totalAmount;
@@ -61,6 +69,10 @@ class CreateBillParams {
     this.customerName,
     required this.subtotal,
     this.taxAmount = 0,
+    this.cgstAmount = 0,
+    this.sgstAmount = 0,
+    this.igstAmount = 0,
+    this.taxRuleVersion = 'v1',
     this.discountAmount = 0,
     this.roundOff = 0,
     required this.totalAmount,

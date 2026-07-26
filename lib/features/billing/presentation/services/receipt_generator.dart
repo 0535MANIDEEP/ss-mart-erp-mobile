@@ -178,7 +178,14 @@ class ReceiptGenerator {
         _buildTotalRow('Subtotal', '₹${bill.subtotal}', font, fontBold, isTotal: false),
         if (bill.discountAmount > 0)
           _buildTotalRow('Discount', '-₹${bill.discountAmount}', font, fontBold, isTotal: false),
-        _buildTotalRow('Tax (GST)', '₹${bill.taxAmount}', font, fontBold, isTotal: false),
+        if (bill.igstAmount > 0)
+          _buildTotalRow('IGST', '₹${bill.igstAmount}', font, fontBold, isTotal: false)
+        else ...[
+          if (bill.cgstAmount > 0)
+            _buildTotalRow('CGST', '₹${bill.cgstAmount}', font, fontBold, isTotal: false),
+          if (bill.sgstAmount > 0)
+            _buildTotalRow('SGST', '₹${bill.sgstAmount}', font, fontBold, isTotal: false),
+        ],
         if (bill.roundOff != 0)
           _buildTotalRow('Round Off', '₹${bill.roundOff}', font, fontBold, isTotal: false),
         pw.Divider(),
@@ -339,32 +346,43 @@ class ReceiptGenerator {
   }
 
   pw.Widget _buildInvoiceItemsTable(Bill bill, pw.Font font, pw.Font fontBold) {
+    final bool isInterstate = bill.igstAmount > 0;
     return pw.Table.fromTextArray(
       headerStyle: pw.TextStyle(font: fontBold, fontSize: 9, color: PdfColors.white),
       cellStyle: pw.TextStyle(font: font, fontSize: 9),
       columnWidths: {
-        0: const pw.FlexColumnWidth(4), // Item
+        0: const pw.FlexColumnWidth(3), // Item
         1: const pw.FlexColumnWidth(1), // HSN
         2: const pw.FlexColumnWidth(1), // Qty
-        3: const pw.FlexColumnWidth(1), // Unit
-        4: const pw.FlexColumnWidth(1.5), // Rate
-        5: const pw.FlexColumnWidth(1.5), // Tax%
-        6: const pw.FlexColumnWidth(1.5), // Tax Amt
+        3: const pw.FlexColumnWidth(1.5), // Rate
+        4: const pw.FlexColumnWidth(1.5), // Tax%
+        5: const pw.FlexColumnWidth(1.5), // CGST/IGST
+        6: const pw.FlexColumnWidth(1.5), // SGST
         7: const pw.FlexColumnWidth(1.5), // Total
       },
       headerDecoration: const pw.BoxDecoration(color: PdfColors.blue800),
       headerAlignment: pw.Alignment.centerLeft,
       cellAlignment: pw.Alignment.centerLeft,
       data: [
-        ['Item', 'HSN', 'Qty', 'Unit', 'Rate', 'Tax%', 'Tax', 'Total'],
+        [
+          'Item', 'HSN', 'Qty',
+          'Rate', 'Tax%',
+          isInterstate ? 'IGST' : 'CGST',
+          isInterstate ? '' : 'SGST',
+          'Total',
+        ],
         ...bill.items.map((item) => [
               item.productName,
-              '', // HSN - would come from product
+              '',
               item.quantity.toStringAsFixed(item.quantity == item.quantity.round() ? 0 : 2),
-              'PCS',
               '₹${item.unitPrice}',
-              '', // Tax%
-              '₹${item.taxAmount}',
+              item.taxRate > 0 ? '${item.taxRate}%' : '-',
+              isInterstate
+                  ? (item.igstAmount > 0 ? '₹${item.igstAmount}' : '-')
+                  : (item.cgstAmount > 0 ? '₹${item.cgstAmount}' : '-'),
+              isInterstate
+                  ? ''
+                  : (item.sgstAmount > 0 ? '₹${item.sgstAmount}' : '-'),
               '₹${item.totalAmount}',
             ]),
       ],
@@ -382,7 +400,14 @@ class ReceiptGenerator {
             _buildInvoiceTotalRow('Subtotal', '₹${bill.subtotal}', font, fontBold),
             if (bill.discountAmount > 0)
               _buildInvoiceTotalRow('Discount', '-₹${bill.discountAmount}', font, fontBold),
-            _buildInvoiceTotalRow('CGST + SGST / IGST', '₹${bill.taxAmount}', font, fontBold),
+            if (bill.igstAmount > 0)
+              _buildInvoiceTotalRow('IGST', '₹${bill.igstAmount}', font, fontBold)
+            else ...[
+              if (bill.cgstAmount > 0)
+                _buildInvoiceTotalRow('CGST', '₹${bill.cgstAmount}', font, fontBold),
+              if (bill.sgstAmount > 0)
+                _buildInvoiceTotalRow('SGST', '₹${bill.sgstAmount}', font, fontBold),
+            ],
             if (bill.roundOff != 0)
               _buildInvoiceTotalRow('Round Off', '₹${bill.roundOff}', font, fontBold),
             pw.Divider(thickness: 1),

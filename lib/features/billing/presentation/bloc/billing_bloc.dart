@@ -99,6 +99,10 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
         discountPercent: existingItem.discountPercent,
         discountAmount: existingItem.discountAmount,
         taxAmount: newTaxAmount,
+        cgstAmount: gstBreakdown.cgstAmount.round(),
+        sgstAmount: gstBreakdown.sgstAmount.round(),
+        igstAmount: gstBreakdown.igstAmount.round(),
+        taxRuleVersion: 'v1',
         totalAmount: newTotalAmount,
         batchNumber: existingItem.batchNumber,
       );
@@ -154,6 +158,10 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
             discountPercent: item.discountPercent,
             discountAmount: discount,
             taxAmount: newTax,
+            cgstAmount: gstBreakdown.cgstAmount.round(),
+            sgstAmount: gstBreakdown.sgstAmount.round(),
+            igstAmount: gstBreakdown.igstAmount.round(),
+            taxRuleVersion: 'v1',
             totalAmount: newTotal,
             batchNumber: item.batchNumber,
             expiryDate: item.expiryDate,
@@ -193,6 +201,10 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
           discountPercent: event.discountPercent,
           discountAmount: discount,
           taxAmount: newTax,
+          cgstAmount: gstBreakdown.cgstAmount.round(),
+          sgstAmount: gstBreakdown.sgstAmount.round(),
+          igstAmount: gstBreakdown.igstAmount.round(),
+          taxRuleVersion: 'v1',
           totalAmount: newTotal,
           batchNumber: item.batchNumber,
           expiryDate: item.expiryDate,
@@ -241,6 +253,10 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
             discountPercent: discountPct,
             discountAmount: discount,
             taxAmount: newTax,
+            cgstAmount: gstBreakdown.cgstAmount.round(),
+            sgstAmount: gstBreakdown.sgstAmount.round(),
+            igstAmount: gstBreakdown.igstAmount.round(),
+            taxRuleVersion: 'v1',
             totalAmount: newTotal,
             batchNumber: item.batchNumber,
             expiryDate: item.expiryDate,
@@ -294,6 +310,10 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
             discountPercent: item.discountPercent,
             discountAmount: item.discountAmount,
             taxAmount: item.taxAmount,
+            cgstAmount: item.cgstAmount,
+            sgstAmount: item.sgstAmount,
+            igstAmount: item.igstAmount,
+            taxRuleVersion: item.taxRuleVersion,
             totalAmount: item.totalAmount,
             batchNumber: event.batchNumber,
             expiryDate: event.expiryDate,
@@ -341,6 +361,10 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
                 discountPercent: item.discountPercent,
                 discountAmount: discount,
                 taxAmount: newTax,
+                cgstAmount: gstBreakdown.cgstAmount.round(),
+                sgstAmount: gstBreakdown.sgstAmount.round(),
+                igstAmount: gstBreakdown.igstAmount.round(),
+                taxRuleVersion: 'v1',
                 totalAmount: newTotal,
                 batchNumber: item.batchNumber,
                 expiryDate: item.expiryDate,
@@ -417,6 +441,10 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
           discountPercent: item.discountPercent,
           discountAmount: item.discountAmount,
           taxAmount: newTax,
+          cgstAmount: gstBreakdown.cgstAmount.round(),
+          sgstAmount: gstBreakdown.sgstAmount.round(),
+          igstAmount: gstBreakdown.igstAmount.round(),
+          taxRuleVersion: 'v1',
           totalAmount: newTotal,
           batchNumber: item.batchNumber,
           expiryDate: item.expiryDate,
@@ -468,6 +496,10 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
           discountPercent: item.discountPercent,
           discountAmount: item.discountAmount,
           taxAmount: newTax,
+          cgstAmount: gstBreakdown.cgstAmount.round(),
+          sgstAmount: gstBreakdown.sgstAmount.round(),
+          igstAmount: gstBreakdown.igstAmount.round(),
+          taxRuleVersion: 'v1',
           totalAmount: newTotal,
           batchNumber: item.batchNumber,
           expiryDate: item.expiryDate,
@@ -531,6 +563,10 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
       customerName: currentState.customerName,
       subtotal: currentState.subtotal,
       taxAmount: currentState.taxAmount,
+      cgstAmount: currentState.cgstAmount,
+      sgstAmount: currentState.sgstAmount,
+      igstAmount: currentState.igstAmount,
+      taxRuleVersion: 'v1',
       discountAmount: currentState.discountAmount + currentState.billDiscountAmount,
       roundOff: currentState.roundOff,
       totalAmount: currentState.totalAmount,
@@ -591,6 +627,10 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
       unitPrice: event.unitPrice,
       taxRate: event.taxRate,
       taxAmount: taxAmount,
+      cgstAmount: gstBreakdown.cgstAmount.round(),
+      sgstAmount: gstBreakdown.sgstAmount.round(),
+      igstAmount: gstBreakdown.igstAmount.round(),
+      taxRuleVersion: 'v1',
       totalAmount: totalAmount,
       batchNumber: event.batchNumber,
     );
@@ -599,11 +639,17 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
   BillingReady _recalculateTotals(BillingReady currentState) {
     int subtotal = 0;
     int taxAmount = 0;
+    int cgstAmount = 0;
+    int sgstAmount = 0;
+    int igstAmount = 0;
     int discountAmount = 0;
 
     for (final item in currentState.items) {
       subtotal += item.subtotal;
       taxAmount += item.taxAmount;
+      cgstAmount += item.cgstAmount;
+      sgstAmount += item.sgstAmount;
+      igstAmount += item.igstAmount;
       discountAmount += item.discountAmount;
     }
 
@@ -614,6 +660,9 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
     return currentState.copyWith(
       subtotal: subtotal,
       taxAmount: taxAmount,
+      cgstAmount: cgstAmount,
+      sgstAmount: sgstAmount,
+      igstAmount: igstAmount,
       discountAmount: discountAmount,
       roundOff: roundOff,
       totalAmount: roundedTotal,

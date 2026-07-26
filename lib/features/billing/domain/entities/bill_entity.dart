@@ -42,6 +42,19 @@ class Bill extends Equatable {
   /// Total tax amount across all line items, in paise.
   final int taxAmount;
 
+  /// CGST component of total tax, in paise (intra-state only).
+  final int cgstAmount;
+
+  /// SGST component of total tax, in paise (intra-state only).
+  final int sgstAmount;
+
+  /// IGST component of total tax, in paise (inter-state only).
+  final int igstAmount;
+
+  /// Tax rule version used for this bill's calculations.
+  /// 'v1' for new bills, 'pre-migration' for bills created before GST engine.
+  final String taxRuleVersion;
+
   /// Total discount applied at the bill level, in paise.
   final int discountAmount;
 
@@ -98,6 +111,10 @@ class Bill extends Equatable {
     required this.billDate,
     required this.subtotal,
     this.taxAmount = 0,
+    this.cgstAmount = 0,
+    this.sgstAmount = 0,
+    this.igstAmount = 0,
+    this.taxRuleVersion = 'v1',
     this.discountAmount = 0,
     this.roundOff = 0,
     required this.totalAmount,
@@ -132,6 +149,10 @@ class Bill extends Equatable {
     DateTime? billDate,
     int? subtotal,
     int? taxAmount,
+    int? cgstAmount,
+    int? sgstAmount,
+    int? igstAmount,
+    String? taxRuleVersion,
     int? discountAmount,
     int? roundOff,
     int? totalAmount,
@@ -156,6 +177,10 @@ class Bill extends Equatable {
       billDate: billDate ?? this.billDate,
       subtotal: subtotal ?? this.subtotal,
       taxAmount: taxAmount ?? this.taxAmount,
+      cgstAmount: cgstAmount ?? this.cgstAmount,
+      sgstAmount: sgstAmount ?? this.sgstAmount,
+      igstAmount: igstAmount ?? this.igstAmount,
+      taxRuleVersion: taxRuleVersion ?? this.taxRuleVersion,
       discountAmount: discountAmount ?? this.discountAmount,
       roundOff: roundOff ?? this.roundOff,
       totalAmount: totalAmount ?? this.totalAmount,
@@ -176,7 +201,8 @@ class Bill extends Equatable {
   @override
   List<Object?> get props => [
         id, billNumber, invoiceNumber, customerId, customerName,
-        billDate, subtotal, taxAmount, discountAmount, roundOff,
+        billDate, subtotal, taxAmount, cgstAmount, sgstAmount, igstAmount,
+        taxRuleVersion, discountAmount, roundOff,
         totalAmount, paidAmount, dueAmount, paymentMode, status,
         isReturn, referenceBillId, createdBy, createdAt, updatedAt,
         version, items,
@@ -216,6 +242,18 @@ class BillItem extends Equatable {
   /// Tax amount in paise calculated on this line item's subtotal.
   final int taxAmount;
 
+  /// CGST component in paise (intra-state).
+  final int cgstAmount;
+
+  /// SGST component in paise (intra-state).
+  final int sgstAmount;
+
+  /// IGST component in paise (inter-state).
+  final int igstAmount;
+
+  /// Tax rule version used for this line item's calculations.
+  final String taxRuleVersion;
+
   /// Final charge for this line item in paise: (quantity * unitPrice) - discountAmount + taxAmount.
   final int totalAmount;
 
@@ -235,6 +273,10 @@ class BillItem extends Equatable {
     this.discountPercent = 0.0,
     this.discountAmount = 0,
     this.taxAmount = 0,
+    this.cgstAmount = 0,
+    this.sgstAmount = 0,
+    this.igstAmount = 0,
+    this.taxRuleVersion = 'v1',
     required this.totalAmount,
     this.batchNumber,
     this.expiryDate,
@@ -246,8 +288,9 @@ class BillItem extends Equatable {
   @override
   List<Object?> get props => [
         id, productId, productName, quantity, unitPrice,
-        taxRate, discountPercent, discountAmount, taxAmount, totalAmount,
-        batchNumber, expiryDate,
+        taxRate, discountPercent, discountAmount, taxAmount,
+        cgstAmount, sgstAmount, igstAmount, taxRuleVersion,
+        totalAmount, batchNumber, expiryDate,
       ];
 
   BillItem copyWith({
@@ -260,6 +303,10 @@ class BillItem extends Equatable {
     double? discountPercent,
     int? discountAmount,
     int? taxAmount,
+    int? cgstAmount,
+    int? sgstAmount,
+    int? igstAmount,
+    String? taxRuleVersion,
     int? totalAmount,
     String? batchNumber,
     DateTime? expiryDate,
@@ -274,6 +321,10 @@ class BillItem extends Equatable {
       discountPercent: discountPercent ?? this.discountPercent,
       discountAmount: discountAmount ?? this.discountAmount,
       taxAmount: taxAmount ?? this.taxAmount,
+      cgstAmount: cgstAmount ?? this.cgstAmount,
+      sgstAmount: sgstAmount ?? this.sgstAmount,
+      igstAmount: igstAmount ?? this.igstAmount,
+      taxRuleVersion: taxRuleVersion ?? this.taxRuleVersion,
       totalAmount: totalAmount ?? this.totalAmount,
       batchNumber: batchNumber ?? this.batchNumber,
       expiryDate: expiryDate ?? this.expiryDate,

@@ -158,6 +158,10 @@ class Bills extends Table {
   DateTimeColumn get billDate => dateTime()();
   IntColumn get subtotal => integer()();
   IntColumn get taxAmount => integer().withDefault(const Constant(0))();
+  IntColumn get cgstAmount => integer().withDefault(const Constant(0))();
+  IntColumn get sgstAmount => integer().withDefault(const Constant(0))();
+  IntColumn get igstAmount => integer().withDefault(const Constant(0))();
+  TextColumn get taxRuleVersion => text().withDefault(const Constant('v1'))();
   IntColumn get discountAmount => integer().withDefault(const Constant(0))();
   RealColumn get discount1 => real().withDefault(const Constant(0.0))();
   RealColumn get discount2 => real().withDefault(const Constant(0.0))();
@@ -202,6 +206,10 @@ class BillItems extends Table {
   RealColumn get discount2 => real().withDefault(const Constant(0.0))();
   IntColumn get discountAmount => integer().withDefault(const Constant(0))();
   IntColumn get taxAmount => integer().withDefault(const Constant(0))();
+  IntColumn get cgstAmount => integer().withDefault(const Constant(0))();
+  IntColumn get sgstAmount => integer().withDefault(const Constant(0))();
+  IntColumn get igstAmount => integer().withDefault(const Constant(0))();
+  TextColumn get taxRuleVersion => text().withDefault(const Constant('v1'))();
   IntColumn get totalAmount => integer()();
   TextColumn get batchNumber => text().nullable()();
 
@@ -1274,7 +1282,7 @@ class AppDatabase extends _$AppDatabase {
   /// Current database schema version. Increment this when adding/removing
   /// columns or tables, and add a migration step in [migration].
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   /// Migration strategy for schema lifecycle management.
   ///
@@ -1345,6 +1353,19 @@ class AppDatabase extends _$AppDatabase {
             await m.createTable(purchaseDealHistory);
             await m.createTable(salesOrderItems);
             await m.createTable(purchaseOrderItems);
+          }
+          if (from < 4) {
+            // GST Phase 2: Add tax breakdown columns to Bills table
+            await m.addColumn(bills, bills.cgstAmount);
+            await m.addColumn(bills, bills.sgstAmount);
+            await m.addColumn(bills, bills.igstAmount);
+            await m.addColumn(bills, bills.taxRuleVersion);
+
+            // GST Phase 2: Add tax breakdown columns to BillItems table
+            await m.addColumn(billItems, billItems.cgstAmount);
+            await m.addColumn(billItems, billItems.sgstAmount);
+            await m.addColumn(billItems, billItems.igstAmount);
+            await m.addColumn(billItems, billItems.taxRuleVersion);
           }
         },
       );
